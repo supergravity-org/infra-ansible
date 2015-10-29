@@ -1,0 +1,25 @@
+---
+- name: Install SASL2 authentication daemon
+  when: ansible_os_family == 'Debian'
+  apt: pkg=sasl2-bin state=present
+  tags:
+  - system
+  - development
+  - sasl
+
+- name: Enable saslauthd
+  when: ansible_os_family == 'Debian'
+  lineinfile: state=present
+    dest=/etc/default/saslauthd
+    line='START=yes'
+    regexp='^START=.?'
+  notify: restart saslauthd
+  tags:
+  - system
+  - development
+  - sasl
+
+- name: Install Cyrus SASL
+  when: ansible_os_family == 'RedHat'
+  yum: name=cyrus-sasl state=present
+

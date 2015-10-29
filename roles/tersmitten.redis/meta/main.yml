@@ -1,0 +1,18 @@
+---
+# meta file for memcached
+galaxy_info:
+  author: Mischa ter Smitten
+  company: Oefenweb.nl B.V.
+  description: Set up a redis (2.8) server in Ubuntu systems
+  license: BSD
+  min_ansible_version: 1.4
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+  categories:
+  - system
+  - web
+  - database
+  - database:nosql
+dependencies: []

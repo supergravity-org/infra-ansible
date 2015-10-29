@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+[uwsgi]
+
+# Path of the log file.
+log_file={{ wagtail_logs_dir }}/uwsgi.log
+
+# The user to run your application as.
+uid={{ wagtail_user }}
+gid=www-data
+
+plugins = python27
+
+enable-threads=true
+
+# base directory (full path)
+chdir = {{ wagtail_base_dir }}
+
+# django's wsgi file
+module = conf.wsgi
+
+# map static content
+static-map = /static={{ wagtail_base_dir }}/static
+static-map = /uploads={{ wagtail_uploads_dir }}
+
+# virtualenv directory (full path)
+home = {{ wagtail_virtenv_dir }}
+
+# unix socket path
+socket = {{ wagtail_uwsgi_socket }}
+
+# maximum number of worker processes
+processes = {{ wagtail_uwsgi_processes }}
+
+# clear environment on exit
+vacuum = true
+
+# disable request logging
+disable-logging = false
+
+{% for k, v in wagtail_uwsgi_params.items() %}
+{%   if v is string or v is number %}
+{{ k }} = {{ v }}
+{%   else %}
+{%     for item in v %}
+{{ k }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

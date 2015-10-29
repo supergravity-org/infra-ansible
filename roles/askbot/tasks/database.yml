@@ -1,0 +1,30 @@
+---
+- name: create database user
+  delegate_to: "{{ askbot_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_user: >
+    name={{ askbot_db_user }}
+    password="{{ askbot_db_pass }}"
+  tags: accounts
+
+- name: create database
+  delegate_to: "{{ askbot_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_db: >
+    name={{ askbot_db_name }}
+    owner={{ askbot_db_user }}
+
+- name: initialize database
+  sudo_user: "{{ askbot_user }}"
+  django_manage: >
+    app_path={{ askbot_base_dir }}
+    virtualenv={{ askbot_virtenv_dir }}
+    command=syncdb
+
+- name: run database migrations
+  sudo_user: "{{ askbot_user }}"
+  django_manage: >
+    app_path={{ askbot_base_dir }}
+    virtualenv={{ askbot_virtenv_dir }}
+    command=migrate
+  tags: migrate

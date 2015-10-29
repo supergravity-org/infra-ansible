@@ -1,0 +1,40 @@
+---
+- include: install.yml tags=install
+- include: configure.yml tags=config
+
+- name: run bower
+  sudo_user: "{{ wagtail_user }}"
+  command: make bower
+  args:
+    chdir: "{{ wagtail_base_dir }}"
+
+- name: collect static media files
+  sudo_user: "{{ wagtail_user }}"
+  django_manage: >
+    app_path={{ wagtail_base_dir }}
+    virtualenv={{ wagtail_virtenv_dir }}
+    command=collectstatic
+
+- name: collect static media files
+  sudo_user: "{{ wagtail_user }}"
+  django_manage: >
+    app_path={{ wagtail_base_dir }}
+    virtualenv={{ wagtail_virtenv_dir }}
+    command=compress
+
+- include: database.yml tags=database
+- include: uwsgi.yml
+  when: ansible_os_family == "Gentoo"
+
+- include: uwsgi-debian.yml
+  when: ansible_os_family == "Debian"
+
+- include: ssl.yml
+  tags: ssl
+
+- include: nginx.yml
+
+- include: setup_celery.yml
+
+- include: demouser.yml
+  when: kitchen_run == True

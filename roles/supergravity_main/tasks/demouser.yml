@@ -1,0 +1,7 @@
+- name: add demo user
+  sudo_user: "{{ wagtail_user }}"
+  django_manage: >
+    app_path={{ wagtail_base_dir }}
+    virtualenv={{ wagtail_virtenv_dir }}
+    command="add_user --user=admin --email=example@example.com --superuser --password=admin"
+  tags: demouser

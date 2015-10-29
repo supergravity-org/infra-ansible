@@ -1,0 +1,34 @@
+---
+- name: configure runscript
+  template: >
+    src=uwsgi.ini.j2
+    dest=/etc/uwsgi-emperor/vassals/{{ wagtail_name }}.ini
+    owner=root group=root mode=0644
+    force=true
+  notify: restart wagtail
+  tags: config
+# - name: configure runscript
+#   file: >
+#     src={{ wagtail_conf_dir }}/uwsgi.ini
+#     dest=/etc/uwsgi-emperor/vassals/{{ wagtail_name }}.ini
+#     owner=root group=root mode=0644
+#     state=link
+#   notify: restart wagtail
+#   tags: config
+
+- name: install uwsgi-plugin-python
+  apt: package=uwsgi-plugin-python
+  notify: restart wagtail
+
+# - name: symlink uwsgi runscript for wagtail
+#   file: >
+#     state=link
+#     src=/etc/init.d/uwsgi
+#     dest=/etc/init.d/{{ wagtail_name }}
+
+- name: enable and start wagtail
+  service: >
+    name=uwsgi-emperor
+    enabled=yes
+    state=started
+  tags: services

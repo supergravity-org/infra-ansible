@@ -1,0 +1,10 @@
+*.pyc
+.DS_Store
+*.swp
+/venv/
+/static/
+/media/
+/.vagrant/
+/Vagrantfile.local
+/docs/_build/
+node_modules

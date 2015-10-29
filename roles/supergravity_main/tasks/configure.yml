@@ -1,0 +1,62 @@
+---
+# - name: configure wagtail and uwsgi
+#   template: >
+#     src={{ item }}.j2
+#     dest={{ wagtail_conf_dir }}/{{ item }}
+#     owner={{ wagtail_user }}
+#     group={{ wagtail_group }}
+#   with_items:
+#     - settings.py
+#   notify: restart wagtail
+
+- name: generate random session_key
+  shell: >
+    openssl rand -base64 34 | head -c 24 > {{ wagtail_conf_dir }}/session_key
+    creates={{ wagtail_conf_dir }}/session_key
+  notify: restart wagtail
+
+- name: ensure rights of session_key file
+  file: >
+    path={{ wagtail_conf_dir }}/session_key
+    owner={{ wagtail_user }}
+    group=www-data
+    mode=0640
+
+# - name: copy manage.py
+#   copy: >
+#     src=manage.py
+#     dest={{ wagtail_base_dir }}/manage.py
+#     owner={{ wagtail_user }}
+#     group={{ wagtail_group }}
+#     mode=0644
+
+- name: copy urls.py and wsgi.py
+  template: >
+    src={{ item }}.j2
+    dest={{ wagtail_conf_dir }}/{{ item }}
+    owner={{ wagtail_user }}
+    group={{ wagtail_group }}
+    mode=0644
+  with_items:
+    - wsgi.py
+
+- name: create __init__.py
+  file: >
+    dest={{ wagtail_conf_dir }}/__init__.py
+    owner={{ wagtail_user }}
+    group={{ wagtail_group }}
+    state=touch
+
+- name: symlink config directory
+  file: >
+    state=link
+    src={{ wagtail_conf_dir }}
+    dest={{ wagtail_base_dir }}/conf
+  when: wagtail_conf_dir != wagtail_base_dir + '/conf'
+
+- name: create local config
+  template: >
+    src=local.py.j2
+    dest={{ wagtail_base_dir }}/{{ wagtail_name}}/settings/local.py
+    owner={{ wagtail_user }}
+    group={{ wagtail_group }}

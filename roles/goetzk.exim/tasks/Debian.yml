@@ -1,0 +1,36 @@
+---
+- name: Install exim4 heavy
+  apt: state=present pkg=exim4-daemon-heavy
+  tags:
+  - system
+  - development
+  - exim
+
+- name: Install spf tools for Exims use
+  apt: state=present pkg=spf-tools-perl
+  tags:
+  - system
+  - development
+  - exim
+  - spf
+
+# Is this shared with redhat?
+- name: Add Exim to sasl group
+  user: append=yes createhome=no name=Debian-exim groups=sasl
+  notify: restart exim4
+  tags:
+  - system
+  - development
+  - exim
+  - sasl
+
+- name: Allow ClamAV access to Exims mail spool
+  when: exim_av_scanner_enable
+  user: append=yes createhome=no name=clamav groups='Debian-exim' 
+  notify: restart clamav
+  tags:
+  - system
+  - development
+  - exim
+  - clam
+

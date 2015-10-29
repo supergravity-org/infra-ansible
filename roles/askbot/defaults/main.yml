@@ -1,0 +1,156 @@
+---
+# URL of the Askbot's git repository to clone.
+askbot_repo_url: https://github.com/ASKBOT/askbot-devel
+
+# Version to checkout.
+askbot_version: 0.7.53.1
+
+# Name of this Askbot instance.
+askbot_name: askbot
+
+# User to create that will run the Askbot instance.
+askbot_user: askbot
+
+# Group to create that will run the Askbot instance.
+askbot_group: "{{ askbot_user }}"
+
+# List of askbot askbot_admins
+askbot_admins: []
+
+# Sets debug mode
+askbot_debug: false
+
+
+# Domain name on which this Askbot instance will be accessible.
+# DOMAIN_NAME
+askbot_domain: example.org
+
+# Maximum allowed size of attachment that user can upload (in kilobytes).
+# ASKBOT_MAX_UPLOAD_FILE_SIZE
+askbot_max_upload_file_size: 1024
+
+# Local time zone for this instance. Choices can be found here:
+#   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name.
+# Django setting `TIME_ZONE`.
+askbot_timezone: "{{ timezone | default('Europe/Prague') }}"
+
+# A string representing the language code. This should be in standard language
+# ID format (see https://docs.djangoproject.com/en/1.7/topics/i18n/#term-language-code).
+# Django setting `LANGUAGE_CODE`.
+askbot_lang: en
+
+# enable multilang settup
+askbot_multilang: false
+
+# in case of multilang, which languages should be enabled
+# needs to be an array of the language codes
+askbot_multilang_langs: ['en']
+
+#
+# Paths
+#
+
+# Path of the base directory to install into.
+askbot_base_dir: "/srv/{{ askbot_name }}"
+
+# Path of the directory to store user uploaded files.
+# Django setting MEDIA_ROOT.
+askbot_uploads_dir: "{{ askbot_base_dir }}/uploads"
+
+# Path of the directory to store configuration files.
+askbot_conf_dir: "/etc/{{ askbot_name }}"
+
+# Path of the directory to store logs.
+askbot_logs_dir: "/var/log/{{ askbot_name }}"
+
+# Path of the Python's virtual environment for the Askbot.
+askbot_virtenv_dir: "{{ askbot_base_dir }}/virtenv"
+
+#
+# uWSGI
+#
+
+# Bind to the specified unix (socket file path), or TCP socket (address:port).
+askbot_uwsgi_socket: '0.0.0.0:8080'
+
+# Number of workers/processes to spawn.
+askbot_uwsgi_processes: "{{ ansible_processor_count }}"
+
+# Hash of additional uwsgi parameters.
+askbot_uwsgi_params:
+  chmod-socket: '777'
+
+#
+# Database
+#
+
+# The database backend to use.
+# Django database argument `ENGINE`.
+# :choices: postgresql_psycopg2, mysql, sqlite3, oracle
+askbot_db_engine: postgresql_psycopg2
+
+# Address of the PostgreSQL instance.
+# Django database argument `HOST`.
+askbot_db_host: "{{ pg_host }}"
+
+# Port number of the PostgreSQL instance.
+# Django database argument `PORT`.
+askbot_db_port: 5432
+
+# Name of the Askbot database.
+# Django database argument `NAME`.
+askbot_db_name: askbot
+
+# Name of the database user for the Askbot database.
+# Django database argument `USER`.
+askbot_db_user: askbot
+
+# Password of the database user for the Askbot database.
+# Django database argument `PASSWORD`.
+askbot_db_pass: askbot
+
+# Should not be changed.
+askbot_db_delegate_to: "{{ askbot_db_host | replace('localhost', inventory_hostname) | replace('127.0.0.1', inventory_hostname) }}"
+
+#
+# Cache (redis)
+# set askbot_cache: true and add the tersmitten.redis package to your role list
+#
+askbot_cache: false
+
+# Location of the memcached daemon; ip:port values, or unix socket path (without `unix:/`).
+# Django cache argument `LOCATION`.
+askbot_cache_location: [ 'redis://{{ redis_bind }}:{{ redis_port }} ']
+
+# The default timeout to use for the cache (seconds).
+# Django cache argument `TIMEOUT`.
+askbot_cache_timeout: 3600
+
+#
+# E-mails
+#
+
+# Address of the SMTP server for sending e-mails.
+# Django setting `EMAIL_HOST`.
+askbot_smtp_host: "{{ smtp_host | default('localhost') }}"
+
+# Port number of the SMTP server for sending e-mails.
+# Django setting `EMAIL_PORT`.
+askbot_smtp_port: "{{ smtp_port | default('25') }}"
+
+# Whether the SMTP server uses TLS.
+# Django setting `EMAIL_USE_TLS`.
+askbot_smtp_tls_enabled: false
+
+# The default 'from' address that e-mails from the Askbot will appear to come
+# from (e.g. no-reply@example.org).
+# Django setting `DEFAULT_FROM_EMAIL` and `SERVER_EMAIL`.
+askbot_smtp_default_from: "{{ smtp_noreply | default('no-reply@example.org') }}"
+
+# Subject-line prefix for email messages sent from Askbot.
+# Django setting `EMAIL_SUBJECT_PREFIX`.
+askbot_smtp_subject_prefix: '[Askbot] '
+
+askbot_akismet_key: false
+
+kitchen_run: false

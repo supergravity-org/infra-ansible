@@ -1,0 +1,6 @@
+---
+
+- name: restart uwsgi
+  service:
+    name: "{{uwsgi_service_name|mandatory}}"
+    state: restarted

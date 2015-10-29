@@ -1,0 +1,8 @@
+{
+  "name": "supergravity_main",
+  "dependencies": {
+    "foundation": "~5.5.3",
+    "font-awesome": "~4.3.0",
+    "bxslider-4": "~4.2.5"
+  }
+}

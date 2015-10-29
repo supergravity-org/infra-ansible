@@ -1,0 +1,53 @@
+#<% require 'kitchen-sync' %>
+---
+driver:
+    name: vagrant
+
+provisioner:
+  name: ansible_playbook
+  roles_path: roles
+  hosts: all
+  require_ansible_repo: true
+  ansible_verbose: true
+  ansible_version:   1.6.2-1.el6
+  require_chef_for_busser: false
+  require_ruby_for_busser: true
+  ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
+
+transport:
+  name: rsync
+
+platforms:
+  - name: ubuntu-14.04
+    driver_plugin: vagrant
+    driver_config:
+      network:
+      - ['forwarded_port', {guest: 80, host: 8080}]
+      - [ 'private_network', { ip: '192.168.33.11' } ]
+
+suites:
+  - name: web
+    hostname: web.kitchen
+    provisioner:
+      playbook: tasks/web.yml
+      hosts: www
+      additional_copy_path:
+        - supergravity_main
+        - tasks
+      extra_vars:
+        askbot_debug: true
+        kitchen_run: true
+        ca_cert: false
+        wagtail_src_path: /tmp/kitchen/supergravity_main
+        wagtail_settings: supergravity_main.settings.dev
+
+  - name: mail
+    hostname: mail.kitchen
+    provisioner:
+      playbook: tasks/mail.yml
+      hosts: mail
+      extra_vars:
+        kitchen_run: true
+
+verifier:
+  ruby_bindir: '/usr/bin'

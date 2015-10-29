@@ -1,0 +1,6 @@
+cruft
+*~
+env/
+.kitchen
+Gemfile.lock
+.vault-pass

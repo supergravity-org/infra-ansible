@@ -1,0 +1,7 @@
+---
+exim_domainlist_local_domains: '@ : localhost : localhost.localdomain'
+exim_av_scanner_path: 'clamd:/var/run/clamd.exim/clamd.sock'
+exim_package_name: exim
+exim_config_directory: /etc/exim
+exim_config_filename: exim.conf
+exim_group: mail

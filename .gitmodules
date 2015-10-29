@@ -1,0 +1,3 @@
+[submodule "wagtail-cookiecutter-foundation"]
+	path = wagtail-cookiecutter-foundation
+	url = https://github.com/chrisdev/wagtail-cookiecutter-foundation

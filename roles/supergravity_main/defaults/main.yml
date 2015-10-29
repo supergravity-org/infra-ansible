@@ -1,0 +1,169 @@
+---
+# defaults file for wagtail
+wagtail_repo_url: https://github.com/torchbox/wagtail.git
+
+# Version to checkout.
+wagtail_version: stable/1.1.x
+
+# Name of this wagtail instance.
+wagtail_name: wagtail
+
+# Name of hostname
+wagtail_hostname: []
+
+# User to create that will run the wagtail instance.
+wagtail_user: "{{ wagtail_name }}"
+
+# Group to create that will run the wagtail instance.
+wagtail_group: "{{ wagtail_user }}"
+
+# sets strict headers if not in test mode
+wagtail_test: false
+
+# List of wagtail wagtail_admins
+wagtail_admins: []
+
+# Sets debug mode
+wagtail_debug: false
+
+# additional env parameters to pass
+wagtail_env: {}
+
+# Domain name on which this wagtail instance will be accessible.
+# DOMAIN_NAME
+wagtail_domain: example.org
+
+# all allowed hosts for this wagtail instance
+wagtail_allowed_hosts: ['*']
+
+# Maximum allowed size of attachment that user can upload (in kilobytes).
+# wagtail_MAX_UPLOAD_FILE_SIZE
+wagtail_max_upload_file_size: 1024
+
+# Local time zone for this instance. Choices can be found here:
+#   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name.
+# Django setting `TIME_ZONE`.
+wagtail_timezone: "{{ timezone | default('Europe/Prague') }}"
+
+# A string representing the language code. This should be in standard language
+# ID format (see https://docs.djangoproject.com/en/1.7/topics/i18n/#term-language-code).
+# Django setting `LANGUAGE_CODE`.
+wagtail_lang: en
+
+# enable multilang settup
+wagtail_multilang: false
+
+# in case of multilang, which languages should be enabled
+# needs to be an array of the language codes
+wagtail_multilang_langs: ['en']
+
+#
+# Paths
+#
+
+# Path of the base directory to install into.
+wagtail_base_dir: /srv/wagtail_{{ wagtail_name }}
+
+
+# Path of the directory to store user uploaded files.
+# Django setting MEDIA_ROOT.
+wagtail_uploads_dir: "{{ wagtail_base_dir }}/uploads"
+
+# Path of the directory to store configuration files.
+wagtail_conf_dir: "/etc/{{ wagtail_name }}"
+
+# Path of the directory to store logs.
+wagtail_logs_dir: "/var/log/{{ wagtail_name }}"
+
+# Path of the Python's virtual environment for the wagtail.
+wagtail_virtenv_dir: "{{ wagtail_base_dir }}/virtenv"
+
+#
+# uWSGI
+#
+
+# Bind to the specified unix (socket file path), or TCP socket (address:port).
+wagtail_uwsgi_socket: '0.0.0.0:8080'
+
+# Number of workers/processes to spawn.
+wagtail_uwsgi_processes: "{{ ansible_processor_count }}"
+
+# Hash of additional uwsgi parameters.
+wagtail_uwsgi_params:
+  chmod-socket: '777'
+
+#
+# Database
+#
+
+# The database backend to use.
+# Django database argument `ENGINE`.
+# :choices: postgresql_psycopg2, mysql, sqlite3, oracle
+wagtail_db_engine: postgresql_psycopg2
+
+# Address of the PostgreSQL instance.
+# Django database argument `HOST`.
+wagtail_db_host: "{{ pg_host }}"
+
+# Port number of the PostgreSQL instance.
+# Django database argument `PORT`.
+wagtail_db_port: 5432
+
+# Name of the wagtail database.
+# Django database argument `NAME`.
+wagtail_db_name: "{{ wagtail_name }}"
+
+# Name of the database user for the wagtail database.
+# Django database argument `USER`.
+wagtail_db_user: "{{ wagtail_name }}"
+
+# Password of the database user for the wagtail database.
+# Django database argument `PASSWORD`.
+wagtail_db_pass: "{{ wagtail_name }}"
+
+# Should not be changed.
+wagtail_db_delegate_to: "{{ wagtail_db_host | replace('localhost', inventory_hostname) | replace('127.0.0.1', inventory_hostname) }}"
+
+#
+# Cache (redis)
+# set wagtail_cache: true and add the tersmitten.redis package to your role list
+#
+wagtail_cache: false
+
+# Location of the memcached daemon; ip:port values, or unix socket path (without `unix:/`).
+# Django cache argument `LOCATION`.
+wagtail_cache_location: [ 'redis://{{ redis_bind[0] }}:{{ redis_port }} ']
+
+# The default timeout to use for the cache (seconds).
+# Django cache argument `TIMEOUT`.
+wagtail_cache_timeout: 3600
+
+#
+# E-mails
+#
+
+# Address of the SMTP server for sending e-mails.
+# Django setting `EMAIL_HOST`.
+wagtail_smtp_host: "{{ smtp_host | default('localhost') }}"
+
+# Port number of the SMTP server for sending e-mails.
+# Django setting `EMAIL_PORT`.
+wagtail_smtp_port: "{{ smtp_port | default('25') }}"
+
+# Whether the SMTP server uses TLS.
+# Django setting `EMAIL_USE_TLS`.
+wagtail_smtp_tls_enabled: false
+
+# The default 'from' address that e-mails from the wagtail will appear to come
+# from (e.g. no-reply@example.org).
+# Django setting `DEFAULT_FROM_EMAIL` and `SERVER_EMAIL`.
+wagtail_smtp_default_from: "{{ smtp_noreply | default('no-reply@example.org') }}"
+
+# Subject-line prefix for email messages sent from wagtail.
+# Django setting `EMAIL_SUBJECT_PREFIX`.
+wagtail_smtp_subject_prefix: '[wagtail] '
+
+# number of celery workers
+wagtail_celery_workers: "{{ ansible_processor_count }}"
+
+wagtail_celery_worker: '{{ wagtail_name }}'

@@ -1,0 +1,35 @@
+{% extends "photo_gallery/base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+{% block body_class %}{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+
+    <div id="content" class="row">
+        <div class="medium-12 columns">
+            <h3>{{ self.title }}</h3>
+            {{ self.intro|richtext }}
+
+            {% if pages|length %}
+                <div>
+                    <ul class="medium-block-grid-4" data-equalizer>
+                    {% for page in pages %}
+                        <li data-equalizer-watch>
+                            <a href="{{ page.url }}">
+                                {% if page.feed_image %}
+                                    {% image page.feed_image fill-500x350 %}
+                                {% endif %}
+                                <center><h5 style="margin-bottom: 0;">{{ page.title }}</h5></center>
+                            </a>
+                        </li>
+                    {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+            <p>
+                Whoops, we don't have any Galleries that match right now.
+            </p>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,83 @@
+---
+- name: install packages
+  apt: package={{ item }}
+  with_items:
+    - python-virtualenv
+    - python-psycopg2
+    - libpq-dev
+    - python-dev
+    - libjpeg-dev
+    - node-less
+    - libmemcached-dev
+  tags: packages
+
+- name: create askbot group
+  group: >
+    name={{ askbot_group }}
+    system=yes
+  tags: accounts
+
+- name: create askbot user
+  user: >
+    name={{ askbot_user }}
+    group={{ askbot_group }}
+    home={{ askbot_base_dir }}
+    createhome=no
+    shell=/sbin/nologin
+    system=yes
+  tags: accounts
+
+- name: prepare base directory
+  file: >
+    state=directory
+    path={{ askbot_base_dir }}
+    owner={{ askbot_user }}
+    group={{ askbot_group }}
+    mode='0755'
+
+- name: clone askbot repository
+  sudo_user: "{{ askbot_user }}"
+  git: >
+    repo={{ askbot_repo_url }}
+    version={{ askbot_version }}
+    dest={{ askbot_base_dir }}
+    force=yes
+
+- name: create other directories
+  file: >
+    state=directory
+    path={{ item.path }}
+    owner={{ askbot_user }} group={{ askbot_group }} mode={{ item.mode | default('0755') }}
+  with_items:
+    - { path: "{{ askbot_base_dir }}/static" }
+    - { path: "{{ askbot_base_dir }}/tmp" }
+    - { path: "{{ askbot_uploads_dir }}", mode: '0750' }
+    - { path: "{{ askbot_conf_dir }}" }
+    - { path: "{{ askbot_logs_dir }}" }
+
+- name: add django_compressor, psycopg and pylibmc to requirements
+  lineinfile: >
+    dest={{ askbot_base_dir }}/askbot_requirements.txt
+    regexp='^{{ item }}'
+    line={{ item }}
+  with_items:
+    - pylibmc
+    - psycopg2
+    - django_transaction_signals
+    - django-haystack
+    - 'django-redis>=3.8,<3.9'
+    - httplib2
+    - markupsafe
+    - stopforumspam
+
+- name: freeze django-robots
+  lineinfile: >
+    dest={{ askbot_base_dir }}/askbot_requirements.txt
+    regexp='^django-robots.*'
+    line='django-robots==1.0'
+
+- name: install requirements
+  sudo_user: "{{ askbot_user }}"
+  pip: >
+    requirements={{ askbot_base_dir }}/askbot_requirements.txt
+    virtualenv={{ askbot_virtenv_dir }}

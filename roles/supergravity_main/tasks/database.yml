@@ -1,0 +1,30 @@
+---
+- name: create database user
+  delegate_to: "{{ wagtail_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_user: >
+    name="{{ wagtail_db_user|default(wagtail_name) }}"
+    password="{{ wagtail_db_pass|default(wagtail_name) }}"
+  tags: accounts
+
+- name: create database
+  delegate_to: "{{ wagtail_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_db: >
+    name="{{ wagtail_db_name|default(wagtail_name) }}"
+    owner="{{ wagtail_db_user|default(wagtail_name) }}"
+
+# - name: initialize database
+#   sudo_user: {{ wagtail_user}}
+#   django_manage: >
+#     app_path={{ wagtail_base_dir }}
+#     virtualenv={{ wagtail_virtenv_dir }}
+#     command=syncdb
+
+- name: run database migrations
+  sudo_user: "{{ wagtail_user }}"
+  django_manage: >
+    app_path={{ wagtail_base_dir }}
+    virtualenv={{ wagtail_virtenv_dir }}
+    command=migrate
+  tags: migrate

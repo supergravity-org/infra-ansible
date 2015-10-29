@@ -1,0 +1,12 @@
+---
+- name: restart askbot
+  when: ansible_os_family == "Gentoo"
+  service: >
+    name={{ askbot_name }}
+    state=restarted
+
+- name: restart askbot
+  when: ansible_os_family == "Debian"
+  service: >
+    name=uwsgi-emperor
+    state=restarted

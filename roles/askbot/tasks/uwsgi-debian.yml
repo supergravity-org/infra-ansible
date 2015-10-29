@@ -1,0 +1,34 @@
+---
+- name: configure runscript
+  template: >
+    src=uwsgi.ini.j2
+    dest=/etc/uwsgi-emperor/vassals/{{ askbot_name }}.ini
+    owner=root group=root mode=0644
+    force=true
+  notify: restart askbot
+  tags: config
+# - name: configure runscript
+#   file: >
+#     src={{ askbot_conf_dir }}/uwsgi.ini
+#     dest=/etc/uwsgi-emperor/vassals/{{ askbot_name }}.ini
+#     owner=root group=root mode=0644
+#     state=link
+#   notify: restart askbot
+#   tags: config
+
+- name: install uwsgi-plugin-python
+  apt: package=uwsgi-plugin-python
+  notify: restart askbot
+
+# - name: symlink uwsgi runscript for askbot
+#   file: >
+#     state=link
+#     src=/etc/init.d/uwsgi
+#     dest=/etc/init.d/{{ askbot_name }}
+
+- name: enable and start askbot
+  service: >
+    name=uwsgi-emperor
+    enabled=yes
+    state=started
+  tags: services

@@ -1,0 +1,21 @@
+---
+- name: configure runscript
+  template: >
+    src=uwsgi_askbot.j2
+    dest=/etc/conf.d/{{ askbot_name }}
+    owner=root group=root mode=0644
+  notify: restart askbot
+  tags: config
+
+- name: symlink uwsgi runscript for askbot
+  file: >
+    state=link
+    src=/etc/init.d/uwsgi
+    dest=/etc/init.d/{{ askbot_name }}
+
+- name: enable and start askbot
+  service: >
+    name={{ askbot_name }}
+    enabled=yes
+    state=started
+  tags: services

@@ -1,0 +1,16 @@
+---
+# handlers file for wagtail
+- name: restart wagtail
+  when: ansible_os_family == "Debian"
+  service: >
+    name=uwsgi-emperor
+    state=restarted
+
+- name: nginx_restart
+  service: >
+    name=nginx
+    state=restarted
+
+- name: restart celery
+  command: >
+    supervisorctl restart supergravity_main-celery

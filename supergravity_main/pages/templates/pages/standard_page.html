@@ -1,0 +1,32 @@
+
+{% extends "base.html" %}
+{% load wagtailcore_tags navigation_tags %}
+{% load supergravity_main_utils %}
+
+{% block content %}
+    <div id="content" class="row">
+        <div class="large-9 medium-8 columns">
+            <h2>{{ self.title }}</h2>
+            <h3 class="subheader">{{ self.subtitle }}</h3>
+            <hr>
+            {% include "pages/includes/intro.html" with intro=self.intro only %}
+        
+            {% include "pages/includes/standard_carousel.html" with image_items=self.image_items.all only %}
+            
+            {% include "pages/includes/body.html" with body=self.body only %}
+        </div>
+        <div id="sidebar" class="large-3 medium-4 columns">
+              {% secondary_menu calling_page=self %}
+              <hr />
+              
+              <center><h6>News Feed</h6></center>
+              {% news_feed %}
+              <hr/>
+              
+              <center><h6>Upcoming Events</h6></center>
+              {% upcoming_events %}
+              
+        </div>
+    </div>
+{% endblock %}
+

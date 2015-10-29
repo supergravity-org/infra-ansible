@@ -1,0 +1,11 @@
+---
+# handlers file for exim4
+- name: restart exim4
+  service: name=exim4 state=restarted
+
+- name: restart saslauthd
+  service: name=saslauthd restarted
+
+- name: restart clamav
+  service: name=clamav restarted
+

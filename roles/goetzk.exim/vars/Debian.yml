@@ -1,0 +1,7 @@
+---
+exim_domainlist_local_domains: '@:localhost'
+exim_av_scanner_path: clamd:/var/run/clamav/clamd.ctl
+exim_package_name: exim4-daemon-heavy
+exim_config_directory: /etc/exim4
+exim_config_filename: exim4.conf
+exim_group: Debian-exim

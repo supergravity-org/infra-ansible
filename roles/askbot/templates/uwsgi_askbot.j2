@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+[uwsgi]
+
+# Path of the uWSGI INI file.
+uwsgi_ini="{{ askbot_conf_dir }}/uwsgi.ini"
+
+# Path of the log file.
+log_file="{{ askbot_logs_dir }}/uwsgi.log"
+
+# The user to run your application as.
+user="askbot"
+
+# Additional uwsgi options.
+#uwsgi_opts=""

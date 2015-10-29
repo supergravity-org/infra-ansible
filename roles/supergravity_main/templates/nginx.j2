@@ -1,0 +1,49 @@
+{% if wagtail_hostname %}
+server {
+    listen 80;
+    server_name {% for host in wagtail_hostname %}www.{{ host }} {% endfor %};
+    return 301 $scheme://{{ wagtail_hostname[0] }}$request_uri;
+}
+{% endif %}
+
+server {
+        listen 80;
+        server_name  {% for host in wagtail_hostname %}{{ host }} {% endfor %};
+        root {{ wagtail_base_dir }}/static;
+
+        access_log /var/log/nginx/{{ wagtail_name }}_access.log;
+        error_log /var/log/nginx/{{ wagtail_name }}_error.log;
+
+
+        location ~ ^/(apple-touch-icon|android-chrome|browserconfig|favicon|mstile)(.*)\.(png|xml|ico)$ {
+            root {{ wagtail_base_dir }}/static/img/favicons;
+        }
+
+        location ~ ^/(robots.txt|humans.txt)$ {
+            alias {{ wagtail_base_dir }}/static/$1;
+        }
+
+        client_max_body_size 4G;
+
+        location  /static/ {
+               alias {{ wagtail_base_dir }}/static/;
+         }
+
+        location  /media/ {
+               alias {{ wagtail_base_dir }}/media/;
+         }
+
+        location / {
+           if (-f {{ wagtail_base_dir }}/static/offline.html) {
+                return 503;
+           }
+           uwsgi_pass {{ wagtail_name }};
+           include /etc/nginx/uwsgi_params;
+        }
+
+        error_page 503 502  @maintenance;
+        location @maintenance {
+            root {{ wagtail_base_dir }}/static;
+            rewrite ^(.*)$ /offline.html break;
+        }
+}

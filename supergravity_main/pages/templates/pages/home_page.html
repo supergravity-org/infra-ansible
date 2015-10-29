@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+{% load static supergravity_main_utils %}
+
+{% block body_class %}template-{{ self.get_verbose_name|slugify }}{% endblock %}
+
+{% block content %}
+    <div class="intro">
+        <div class="row text-center">
+          <div class="medium-12 columns">
+            <h3>{{ self.title_text|richtext }}</h3>
+            {{ self.body|richtext }}
+            <div id="carousel">
+                {% include "pages/includes/bx_carousel.html" with carousel_items=self.carousel_items.all only  %}
+            </div>
+          </div>
+        </div>
+    </div>
+
+	<div class="section">
+	    <div id="testimonials" class="row">
+	        <div class="medium-8 medium-centered columns">
+	            <center><h4>Quotes</h4></center>
+	            <div class="panel radius">
+	                {% testimonials %}
+	            </div>
+	         </div>
+	    </div>
+
+        <div id="icons" class="row">
+        <h3>Featuring</h3>
+        <br>
+        <ul class="medium-block-grid-3 small-block-grid-2">
+            {% for block in self.content_items.all %}
+            <li class="icon">
+                <a href="{{ block.link }}" target="_blank">
+                 {% if block.image %}
+                    {% image block.image fill-60x60 %}
+                 {% endif %}
+                 <h4>{{ block.title}}</h4>
+                 {{ block.content|richtext }}
+                </a>
+            </li>
+           {% endfor %}
+        </ul>
+        </div>
+	</div>
+
+{% endblock %}

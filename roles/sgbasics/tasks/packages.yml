@@ -1,0 +1,8 @@
+---
+# tasks file for sgpackages
+- name: install usefull packages
+  apt: package={{item}}
+  with_items:
+    - unp
+    - vim
+  tags: packages

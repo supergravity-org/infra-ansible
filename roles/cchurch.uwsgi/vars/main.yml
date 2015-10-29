@@ -1,0 +1,23 @@
+---
+
+uwsgi_packages:
+  yum:
+    - uwsgi
+    - uwsgi-plugin-python
+  apt:
+    - uwsgi-emperor
+    - uwsgi-plugin-python
+
+uwsgi_upstart_packages:
+  yum: upstart
+  apt: upstart
+
+uwsgi_vassal_paths:
+  pkg:
+    yum: /etc/uwsgi.d
+    apt: /etc/uwsgi-emperor/vassals
+
+uwsgi_service_names:
+  pkg:
+    yum: uwsgi
+    apt: uwsgi-emperor

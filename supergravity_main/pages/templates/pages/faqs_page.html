@@ -1,0 +1,14 @@
+
+{% extends "base.html" %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+    <div id="content" class="row">
+        <div id="faq" class="large-8 large-offset-2 medium-12 small-12 columns panel">
+            <h2>{{ self.title }}</h2>
+            <hr>
+            {{ self.body }}
+        </div>
+    </div>
+{% endblock %}
+

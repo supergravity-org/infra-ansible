@@ -1,0 +1,36 @@
+---
+# http://wiki.cacert.org/Exim4Configuration says to run exim-gencert but that
+# produces 1024bit keys which no CA today will accept. The following
+# configuration stanzas do the same thing but without prompting and using
+# decent length keys.
+
+# https://my.spamexperts.com/kb/33/generate-dkim-certificate.html
+- name: Generate certificate for DKIM
+  command: openssl genrsa -out {{ exim_config_directory }}/dkim.key 2048
+    creates={{ exim_config_directory }}/dkim.key
+  tags:
+  - system
+  - openssl
+  - mail
+  - exim
+  - dkim
+
+- name: Generate public key for DKIM
+  command: openssl rsa -in {{ exim_config_directory }}/dkim.key -out {{ exim_config_directory }}/dkim.pub -pubout -outform PEM
+    creates={{ exim_config_directory }}/dkim.pub
+  tags:
+  - system
+  - openssl
+  - mail
+  - exim
+  - dkim
+
+- name: Restrict access to DKIM SSL related files
+  file: mode=440 owner=root group={{ exim_group }}
+    path={{ exim_config_directory }}/{{ item }}
+  with_items:
+    - dkim.key
+    - dkim.pub
+  tags:
+  - system
+

@@ -1,0 +1,73 @@
+---
+- name:  Nginx config NO SSL
+  template: src=nginx.j2
+            dest=/etc/nginx/sites-available/{{ wagtail_name }}
+            backup=yes
+  notify: nginx_restart
+  tags:
+    - no_ssl
+    - nginx
+
+# - name: Copy the private key file
+#   copy: src={{ keystore_path }}/{{ssl_private_key}}
+#         dest=/svr/ssl/{{ssl_private_key}}
+#         owner=root
+#         group=root
+#   sudo: yes
+#   notify: nginx_restart
+#   when: use_ssl|default(False) == True
+#   tags:
+#     - ssl
+#     - nginx
+#
+# - name: Copy the SSL bundle (public key)
+#   copy: src={{ keystore_path }}/{{ ssl_cert }}
+#         dest=/etc/ssl/certs/{{ ssl_cert }}
+#         owner=root
+#         group=root
+#   sudo: yes
+#   notify: nginx_restart
+#   when: use_ssl|default(False) == True
+#   tags:
+#     - ssl
+#     - nginx
+
+- name: Generate the stronger DHE parameters
+  command: openssl dhparam -out dhparam.pem 2048
+  args:
+    chdir: /etc/ssl
+    creates: /etc/ssl/dhparam.pem
+  sudo: yes
+  notify: nginx_restart
+  when: use_ssl|default(False) == True
+  tags:
+      - nginx
+      - ssl
+
+
+- name: Nginx Config YES SSL
+  template: src=nginx_ssl.j2
+            dest=/etc/nginx/sites-available/{{ wagtail_name }}-ssl
+            backup=yes
+  when: use_ssl|default(False) == True
+  notify: nginx_restart
+  tags:
+    - ssl
+    - nginx
+
+- name: enable nginx config
+  file: >
+    src=/etc/nginx/sites-available/{{item}}
+    dest=/etc/nginx/sites-enabled/{{item}}
+    state=link
+  notify: nginx_restart
+  with_items:
+    ["{{wagtail_name}}"]
+
+- name: enable nginx config SSL
+  file: >
+    src=/etc/nginx/sites-available/{{wagtail_name}}-ssl
+    dest=/etc/nginx/sites-enabled/{{wagtail_name}}-ssl
+    state=link
+  notify: nginx_restart
+  when: use_ssl|default(False) == True

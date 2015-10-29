@@ -1,0 +1,13 @@
+[program:{{ wagtail_name }}-celery]
+environment={% for k, v in wagtail_env.iteritems() %}{% if not loop.first %},{% endif %}{{ k }}="{{ v }}"{% endfor %}
+
+directory= {{ wagtail_base_dir }}
+command= {{ wagtail_virtenv_dir }}/bin/celery -A {{ wagtail_celery_worker }} worker --loglevel=INFO
+user= {{ wagtail_user }}
+autostart=True
+autorestart=True
+numprocs={{ wagtail_celery_workers }}
+process_name=%(program_name)s_%(process_num)02d
+
+stdout_logfile={{ wagtail_logs_dir }}/celery-worker.log
+stderr_logfile={{ wagtail_logs_dir }}/celery-worker.log

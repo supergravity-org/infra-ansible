@@ -1,0 +1,50 @@
+---
+- name: configure askbot and uwsgi
+  template: >
+    src={{ item }}.j2
+    dest={{ askbot_conf_dir }}/{{ item }}
+    owner={{ askbot_user }}
+    group={{ askbot_group }}
+  with_items:
+    - settings.py
+  notify: restart askbot
+
+- name: generate random session_key
+  shell: >
+    openssl rand -base64 34 | head -c 24 > {{ askbot_conf_dir }}/session_key
+    creates={{ askbot_conf_dir }}/session_key
+  notify: restart askbot
+
+- name: ensure rights of session_key file
+  file: >
+    path={{ askbot_conf_dir }}/session_key
+    owner={{ askbot_user }}
+    group=www-data
+    mode=0640
+
+- name: copy manage.py
+  copy: >
+    src=manage.py
+    dest={{ askbot_base_dir }}/manage.py
+    owner={{ askbot_user }}
+    group={{ askbot_group }}
+    mode=0644
+
+- name: copy urls.py and wsgi.py
+  copy: >
+    src={{ item }}
+    dest={{ askbot_conf_dir }}/{{ item }}
+    owner={{ askbot_user }}
+    group={{ askbot_group }}
+    mode=0644
+  with_items:
+    - urls.py
+    - wsgi.py
+    - __init__.py
+
+- name: symlink config directory
+  file: >
+    state=link
+    src={{ askbot_conf_dir }}
+    dest={{ askbot_base_dir }}/conf
+  when: askbot_conf_dir != askbot_base_dir + '/conf'

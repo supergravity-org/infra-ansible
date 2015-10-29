@@ -1,0 +1,8 @@
+---
+- name: Install exim4
+  yum: state=present name=exim
+  tags:
+  - system
+  - development
+  - exim
+
