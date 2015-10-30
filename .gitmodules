@@ -1,3 +1,6 @@
 [submodule "wagtail-cookiecutter-foundation"]
 	path = wagtail-cookiecutter-foundation
 	url = https://github.com/chrisdev/wagtail-cookiecutter-foundation
+[submodule "roles/axil42.discourse"]
+	path = roles/axil42.discourse
+	url = https://github.com/axilleas/ansible-role-discourse.git

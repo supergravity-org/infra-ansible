@@ -1,7 +1,7 @@
 supergravity ansible roles
 ==========================
 
-This ansible repository configures the (http://supergravity.org)[supergravity] infrastructure.
+This ansible repository configures the [supergravity](http://supergravity.org) infrastructure.
 
 
 HOWTO
@@ -9,8 +9,8 @@ HOWTO
 
 This setup is only tested on linux (feedback about other systems welcome)
 
-install (https://docs.chef.io/install_dk.html)[chefdk] (required for (http://kitchen.ci)[testkitchen]).
-install (https://www.vagrantup.com/downloads.html)[vagrant]
+install [chefdk](https://docs.chef.io/install_dk.html) (required for [testkitchen](http://kitchen.ci)).
+install [vagrant](https://www.vagrantup.com/downloads.html)
 install python with virtualenv.
 Debian/Ubuntu:
 
@@ -31,6 +31,14 @@ To run your configuration simply run:
   kitchen converge web
 ```
 
+To see a list of targets:
+
+```sh
+  kitchen list
+```
+
+
+
 It will start a virtual machine and configures it for the webservices used.
 
 Change your '''/etc/hosts''' file:
@@ -38,7 +46,7 @@ Change your '''/etc/hosts''' file:
 127.0.0.1       localhost [...] ask.supergravity.local supergravity.local wiki.supergravity.local www.supergravity.local
 ```
 
-Now you can visit (http://supergravity.local:8080)[http://supergravity.local:8080] for your changes.
+Now you can visit [http://supergravity.local:8080](http://supergravity.local:8080) for your changes.
 
 
 Directory structure
@@ -49,9 +57,17 @@ Directory structure
 | etc/           | host files |
 | roles          | ansible roles for configuration of services |
 | keystore       | encrypted passwords for services |
-| supergravity_main | (http://wagtail.io)[wagtail] root of cms |
+| supergravity_main | [wagtail](http://wagtail.io) root of cms |
 | tasks/         | ansible tasks for rolling out |
 | .kitchen.yml   | kitchen configuration for testing |
+
+Software used
+-------------
+
+ * [wagtail](http://wagtail.io) cms
+ * [askbot](http://askbot.org) question/answer site
+ * [discourse](http://www.discourse.org) discussion platform (IN PROGRESS)
+ * [docuwiki](https://www.dokuwiki.org) wiki (TODO) (in docker, no php on the host)
 
 
 Tips
