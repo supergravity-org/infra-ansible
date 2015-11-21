@@ -1,0 +1,6 @@
+# these are common files for your application if you forked tendenci
+# common files for tendenci live in /requirements/tendenci.txt
+# the /requirements/tendenci.txt file is overwritten on every upgrade
+# https://tendenci.readthedocs.org
+
+# Your common dependencies here.

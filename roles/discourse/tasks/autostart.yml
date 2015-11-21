@@ -1,0 +1,20 @@
+---
+# tasks file for discourse
+- name: install supervisor
+  apt: name=supervisor
+
+- name: write supervisor config file
+  register: discourse_super
+  template: >
+    src=supervisor.conf.j2
+    dest=/etc/supervisor/conf.d/discourse.conf
+
+- file: path=/var/log/discourse state=directory
+  when: discourse_super.changed
+
+- command: supervisorctl reread
+
+- name: start discourse
+  supervisorctl: >
+    name=discourse
+    state=started

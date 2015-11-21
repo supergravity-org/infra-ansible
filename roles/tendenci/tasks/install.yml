@@ -1,0 +1,152 @@
+---
+- name: install packages
+  apt: package={{ item }}
+  with_items:
+    - python-virtualenv
+    - python-psycopg2
+    - libpq-dev
+    - python-dev
+    - libjpeg-dev
+    - node-less
+    - libmemcached-dev
+    - binutils
+    - libproj-dev
+    - gdal-bin
+    - libgeos-dev
+    - proj-data
+    - libproj-dev
+    - postgis
+    - postgresql-9.3-postgis-2.1
+    - postgresql-9.3-postgis-scripts
+    - libfreetype6-dev
+    - libwebp-dev
+  tags: packages
+
+- name: create tendenci group
+  group: >
+    name={{ tendenci_group }}
+    system=yes
+  tags: accounts
+
+- name: create tendenci user
+  user: >
+    name={{ tendenci_user }}
+    group={{ tendenci_group }}
+    home={{ tendenci_base_dir }}
+    createhome=no
+    shell=/sbin/nologin
+    system=yes
+  tags: accounts
+
+- name: prepare base directory
+  file: >
+    state=directory
+    path={{ tendenci_base_dir }}
+    owner={{ tendenci_user }}
+    group={{ tendenci_group }}
+    mode='0755'
+
+
+
+- name: copy website to target
+  sudo_user: '{{tendenci_user}}'
+  synchronize: >
+    archive=yes
+    src={{ tendenci_src_root }}/
+    dest={{ tendenci_base_dir }}/
+#    rsync_opts:
+#      - "--chown='{{wagtail_user}}:{{wagtail_group}}'"
+#    group={{wagtail_group}}
+#    owner={{wagtail_user}}
+
+- name: ensure file permissions
+  file: >
+    dest={{ tendenci_base_dir }}
+    recurse=yes
+    owner={{ tendenci_user }}
+    group={{ tendenci_group }}
+#
+# - name: clone tendenci repository
+#   sudo_user: "{{ tendenci_user }}"
+#   git: >
+#     repo={{ tendenci_repo_url }}
+#     version={{ tendenci_version }}
+#     dest={{ tendenci_base_dir }}
+#     force=yes
+#
+- name: create other directories
+  file: >
+    state=directory
+    path={{ item.path }}
+    owner={{ tendenci_user }} group={{ tendenci_group }} mode={{ item.mode | default('0755') }}
+  with_items:
+    - { path: "{{ tendenci_base_dir }}/static" }
+    - { path: "{{ tendenci_base_dir }}/tmp" }
+    - { path: "{{ tendenci_uploads_dir }}", mode: '0750' }
+#    - { path: "{{ tendenci_conf_dir }}" }
+    - { path: "{{ tendenci_logs_dir }}" }
+
+- file: path={{ tendenci_base_dir }}/download state=directory
+
+- name: download tendenci version
+  get_url: >
+    url="https://github.com/tendenci/tendenci/archive/{{tendenci_version}}.zip"
+    dest="{{ tendenci_base_dir }}/download/tendenci-{{tendenci_version}}.zip"
+
+- name: set install version
+  copy: >
+    dest={{ tendenci_base_dir}}/requirements/tendenci.txt
+    content="{{ tendenci_base_dir }}/download/tendenci-{{tendenci_version}}.zip"
+
+
+- name: add extra requirements
+  lineinfile: >
+    dest={{ tendenci_base_dir }}/requirements_extra.txt
+    create=yes
+    regexp='^{{ item }}'
+    line={{ item }}
+  with_items:
+    - 'django-redis>=4.2,<4.3'
+    - 'Pillow'
+    - django-oauth-toolkit
+    - django-mama-cas
+
+# - name: freeze django-robots
+#   lineinfile: >
+#     dest={{ tendenci_base_dir }}/tendenci_requirements.txt
+#     regexp='^django-robots.*'
+#     line='django-robots==1.0'
+
+- name: install requirements
+  sudo_user: "{{ tendenci_user }}"
+  when: tendenci_dev == False
+  pip: >
+    requirements={{ tendenci_base_dir }}/requirements.txt
+    virtualenv={{ tendenci_virtenv_dir }}
+
+- name: install dev requirements
+  sudo_user: "{{ tendenci_user }}"
+  when: tendenci_dev == True
+  pip: >
+    requirements={{ tendenci_base_dir }}/requirements/dev.txt
+    virtualenv={{ tendenci_virtenv_dir }}
+
+- name: install extra requirements
+  sudo_user: "{{ tendenci_user }}"
+  pip: >
+    requirements={{ tendenci_base_dir }}/requirements_extra.txt
+    virtualenv={{ tendenci_virtenv_dir }}
+
+# - name: install PIL
+#   pip: >
+#     virtualenv={{ tendenci_virtenv_dir }}
+#     name=''
+#     extra_args='--no-index -f http://dist.plone.org/thirdparty/ -U PIL'
+
+# - name: install extra packages
+#   pip: >
+#     virtualenv={{ tendenci_virtenv_dir }}
+#     name={{item['n']}}
+#     version={{item['v']}}
+#   with_items:
+#     - { n: django-redis, v: '<=3.9.0 }

@@ -1,0 +1,159 @@
+---
+# URL of the Tendenci's git repository to clone.
+tendenci_repo_url: https://github.com/tendenci/tendenci
+
+# install dev environment
+tendenci_dev: false
+
+# Version to checkout.
+tendenci_version: 'v7.1.25'
+
+# Name of this Tendenci instance.
+tendenci_name: tendenci
+
+# User to create that will run the Tendenci instance.
+tendenci_user: tendenci
+
+# Group to create that will run the Tendenci instance.
+tendenci_group: "{{ tendenci_user }}"
+
+# List of tendenci tendenci_admins
+tendenci_admins: []
+
+# Sets debug mode
+tendenci_debug: false
+
+
+# Domain name on which this Tendenci instance will be accessible.
+# DOMAIN_NAME
+tendenci_domain: example.org
+
+# Maximum allowed size of attachment that user can upload (in kilobytes).
+# Tendenci_MAX_UPLOAD_FILE_SIZE
+tendenci_max_upload_file_size: 1024
+
+# Local time zone for this instance. Choices can be found here:
+#   http://en.wikipedia.org/wiki/List_of_tz_zones_by_name.
+# Django setting `TIME_ZONE`.
+tendenci_timezone: "{{ timezone | default('Europe/Prague') }}"
+
+# A string representing the language code. This should be in standard language
+# ID format (see https://docs.djangoproject.com/en/1.7/topics/i18n/#term-language-code).
+# Django setting `LANGUAGE_CODE`.
+tendenci_lang: en
+
+# enable multilang settup
+tendenci_multilang: false
+
+# in case of multilang, which languages should be enabled
+# needs to be an array of the language codes
+tendenci_multilang_langs: ['en']
+
+#
+# Paths
+#
+
+# Path of the base directory to install into.
+tendenci_base_dir: "/srv/{{ tendenci_name }}"
+
+# Path of the directory to store user uploaded files.
+# Django setting MEDIA_ROOT.
+tendenci_uploads_dir: "{{ tendenci_base_dir }}/uploads"
+
+# Path of the directory to store configuration files.
+tendenci_conf_dir: "{{ tendenci_base_dir }}/conf"
+
+# Path of the directory to store logs.
+tendenci_logs_dir: "/var/log/{{ tendenci_name }}"
+
+# Path of the Python's virtual environment for the Tendenci.
+tendenci_virtenv_dir: "{{ tendenci_base_dir }}/virtenv"
+
+#
+# uWSGI
+#
+
+# Bind to the specified unix (socket file path), or TCP socket (address:port).
+tendenci_uwsgi_socket: '0.0.0.0:8080'
+
+# Number of workers/processes to spawn.
+tendenci_uwsgi_processes: "{{ ansible_processor_count }}"
+
+# Hash of additional uwsgi parameters.
+tendenci_uwsgi_params:
+  chmod-socket: '777'
+
+#
+# Database
+#
+
+# The database backend to use.
+# Django database argument `ENGINE`.
+# :choices: postgresql_psycopg2, mysql, sqlite3, oracle
+tendenci_db_engine: postgresql_psycopg2
+
+# Address of the PostgreSQL instance.
+# Django database argument `HOST`.
+tendenci_db_host: "{{ pg_host }}"
+
+# Port number of the PostgreSQL instance.
+# Django database argument `PORT`.
+tendenci_db_port: 5432
+
+# Name of the Tendenci database.
+# Django database argument `NAME`.
+tendenci_db_name: tendenci
+
+# Name of the database user for the Tendenci database.
+# Django database argument `USER`.
+tendenci_db_user: tendenci
+
+# Password of the database user for the Tendenci database.
+# Django database argument `PASSWORD`.
+tendenci_db_pass: tendenci
+
+# Should not be changed.
+tendenci_db_delegate_to: "{{ tendenci_db_host | replace('localhost', inventory_hostname) | replace('127.0.0.1', inventory_hostname) }}"
+
+#
+# Cache (redis)
+# set tendenci_cache: true and add the tersmitten.redis package to your role list
+#
+tendenci_cache: false
+
+# Location of the memcached daemon; ip:port values, or unix socket path (without `unix:/`).
+# Django cache argument `LOCATION`.
+tendenci_cache_location: [ 'redis://{{ redis_bind }}:{{ redis_port }} ']
+
+# The default timeout to use for the cache (seconds).
+# Django cache argument `TIMEOUT`.
+tendenci_cache_timeout: 3600
+
+#
+# E-mails
+#
+
+# Address of the SMTP server for sending e-mails.
+# Django setting `EMAIL_HOST`.
+tendenci_smtp_host: "{{ smtp_host | default('localhost') }}"
+
+# Port number of the SMTP server for sending e-mails.
+# Django setting `EMAIL_PORT`.
+tendenci_smtp_port: "{{ smtp_port | default('25') }}"
+
+# Whether the SMTP server uses TLS.
+# Django setting `EMAIL_USE_TLS`.
+tendenci_smtp_tls_enabled: false
+
+# The default 'from' address that e-mails from the Tendenci will appear to come
+# from (e.g. no-reply@example.org).
+# Django setting `DEFAULT_FROM_EMAIL` and `SERVER_EMAIL`.
+tendenci_smtp_default_from: "{{ smtp_noreply | default('no-reply@example.org') }}"
+
+# Subject-line prefix for email messages sent from Tendenci.
+# Django setting `EMAIL_SUBJECT_PREFIX`.
+tendenci_smtp_subject_prefix: '[Tendenci] '
+
+tendenci_akismet_key: false
+
+kitchen_run: false

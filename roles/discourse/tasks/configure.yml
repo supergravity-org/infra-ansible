@@ -1,0 +1,97 @@
+---
+# tasks file for discourse
+# - include_vars: main.yml
+# - include_vars: private.yml
+
+# - include: swap.yml
+#   when: ansible_memtotal_mb|int < 2000
+
+- name: Generate SSH key for the Discourse Docker container
+  shell: mkdir -p ~/.ssh && ssh-keygen -f ~/.ssh/id_rsa -t rsa -N ''
+         creates=~/.ssh/id_rsa.pub
+
+- name: Create Discourse Docker path
+  file:
+    path: "{{ discourse_docker_path }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 755
+
+- name: Clone discourse_docker repo
+  git:
+    repo: "{{ discourse_docker_git_repo }}"
+    version: master
+    dest: "{{ discourse_docker_path }}"
+    accept_hostkey: yes
+
+# - name: Make ssl directory
+#   file:
+#     path: "{{ discourse_docker_path }}/shared/standalone/ssl/"
+#     state: directory
+#
+# - name: Copy SSL certificates
+#   copy:
+#     src: "ssl/{{ item }}"
+#     dest: "{{ discourse_docker_path }}/shared/standalone/ssl/{{ item }}"
+#   with_items:
+#     - ssl.key
+#     - ssl.crt
+#   when: (discourse_ssl_nginx and discourse_ssl_docker) is defined
+
+- name: Copy application yaml
+  template:
+    src: '{{discourse_app}}.j2'
+    dest: "{{ discourse_docker_path }}/containers/app.yml"
+    owner: root
+    group: root
+    mode: 644
+  notify:
+    launcher rebuild
+
+- name: create database user
+  delegate_to: "{{ discourse_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_user: >
+    name={{ discourse_db_user }}
+    password="{{ discourse_db_password }}"
+  tags: accounts
+
+- name: create database
+  delegate_to: "{{ discourse_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_db: >
+    name={{ discourse_db_name }}
+    owner={{ discourse_db_user }}
+
+- name: add extensions
+  delegate_to: "{{ discourse_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_ext: >
+    db={{ discourse_db_name }}
+    name={{ item }}
+  with_items:
+    - hstore
+    - pg_trgm
+
+
+# - shell: "docker images | grep samsaffron/discourse"
+#   register: discourse_docker_image
+#   ignore_errors: True
+#   changed_when: False
+
+- shell: "docker ps | local_discourse/app"
+  register: discourse_running
+  ignore_errors: True
+  changed_when: False
+
+- shell: /var/discourse/launcher rebuild app
+  when: discourse_running.rc != 0
+
+
+# - name: generate docker image
+#   shell: /var/discourse/launcher rebuild app
+#   when: discourse_docker_image.stdout.count() > 0
+#
+# - name: bootstrap
+#   shell: /var/discourse/launcher bootstrap app

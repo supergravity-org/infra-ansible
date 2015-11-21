@@ -20,29 +20,39 @@ transport:
 platforms:
   - name: ubuntu-14.04
     driver_plugin: vagrant
-    driver_config:
-      network:
-      - ['forwarded_port', {guest: 80, host: 8080}]
-      - [ 'private_network', { ip: '192.168.33.11' } ]
 
 suites:
   - name: web
     hostname: web.kitchen
+    driver_config:
+      customize:
+        memory: 1300
+      network:
+      - ['forwarded_port', {guest: 80, host: 8080}]
+      - [ 'private_network', { ip: '192.168.33.11' } ]
     provisioner:
       playbook: tasks/web.yml
       hosts: www
       additional_copy_path:
         - supergravity_main
+        - sg_tendenci
         - tasks
+        - action_plugins
+        - library
       extra_vars:
         askbot_debug: true
         kitchen_run: true
         ca_cert: false
+        tendenci_dev: true
         wagtail_src_path: /tmp/kitchen/supergravity_main
         wagtail_settings: supergravity_main.settings.dev
+        askbot_url: http://ask.supergravity.local:8080
 
   - name: mail
     hostname: mail.kitchen
+    driver_config:
+      network:
+      - [ 'private_network', { ip: '192.168.33.12' } ]
     provisioner:
       playbook: tasks/mail.yml
       hosts: mail

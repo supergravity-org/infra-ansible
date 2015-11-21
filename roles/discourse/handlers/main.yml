@@ -1,0 +1,20 @@
+---
+# handlers file for discourse
+
+- name: launcher rebuild
+  shell: /var/discourse/launcher rebuild app
+
+- name: launcher bootstrap
+  shell: /var/discourse/launcher bootstrap app
+
+- name: launcher start
+  shell: /var/discourse/launcher start app
+
+- name: launcher stop
+  shell: /var/discourse/launcher stop app
+
+- name: launcher restart
+  shell: /var/discourse/launcher restart app
+
+- name: launcher destroy
+  shell: /var/discourse/launcher destroy app

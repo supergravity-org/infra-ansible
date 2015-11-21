@@ -1,3 +1,5 @@
 ---
 # tasks file for sgbasics
   - {include: 'packages.yml' }
+  - {include: 'kitchen_fixes.yml',
+     when: '{{kitchen_run}} == True'}

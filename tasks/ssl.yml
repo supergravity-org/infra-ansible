@@ -1,0 +1,67 @@
+# - name: copy ssl certs
+#   copyv: >
+#     src=../keystore/{{item[0]}}
+#     dest={{item[1]}}/{{item[0]}}
+#   with_nested:
+#     supergravity.key: '/etc/ssl/private/supergravity.key'
+#     supergravity.crt: '/etc/ssl/certs/supergravity.crt'
+
+- name: install ssl package
+  apt: name=ssl-cert state=present
+
+
+- name: copy ssl key
+  when: '{{ use_ssl|default(False) == True and kitchen_run|default(False) == False }}'
+  copyv: >
+    src=../keystore/supergravity.key
+    dest=/etc/ssl/private/supergravity.key
+    mode=640
+    group=www-data
+
+- name: copy ssl certs
+  when: '{{ use_ssl|default(False) == True and kitchen_run|default(False) == False }}'
+  copyv: >
+    src=../keystore/supergravity.crt
+    dest=/etc/ssl/certs/supergravity.crt
+    mode=640
+    group=www-data
+
+- name: copy ssl key
+  when: '{{ use_ssl|default(False) == True and kitchen_run|default(False) == True }}'
+  file: >
+    src=/etc/ssl/private/ssl-cert-snakeoil.key
+    dest=/etc/ssl/private/supergravity.key
+    mode=640
+    group=www-data
+    state=link
+
+- name: copy ssl certs
+  when: '{{ use_ssl|default(False) == True and kitchen_run|default(False) == True }}'
+  file: >
+    src=/etc/ssl/certs/ssl-cert-snakeoil.pem
+    dest=/etc/ssl/certs/supergravity.crt
+    mode=640
+    group=www-data
+    state=link
+
+- name: Generate the stronger DHE parameters
+  command: openssl dhparam -out dhparam.pem 2048
+  args:
+    chdir: /etc/ssl
+    creates: /etc/ssl/dhparam.pem
+  sudo: yes
+  when: use_ssl|default(False) == True
+  tags:
+      - ssl
+
+
+- name: Comodo SSL bundle for OCSP stapling
+  copy: src=../keystore/{{ ca_cert }}
+        dest=/etc/ssl/certs/{{ ca_cert }}
+        owner=root
+        group=root
+  sudo: yes
+  when: use_ssl|default(False) == True and kitchen_run|default(False) == False
+  tags:
+    - ssl
+    - nginx

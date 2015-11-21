@@ -1,0 +1,24 @@
+- name: create spam update script
+  copy: >
+    content='#!/bin/bash\n. {{tendenci_virtenv_dir}}/bin/activate; cd {{ tendenci_base_dir}}; python manage.py sfsupdate'
+    dest={{ tendenci_base_dir }}/update_spamlist.sh
+    owner={{tendenci_user}}
+    mode=755
+
+- name: setup spamstop cronjob
+  cron: >
+    name=update_spamlist
+    user={{tendenci_user}}
+    cron_file=update_spamlist
+    job={{ tendenci_base_dir }}/update_spamlist.sh
+    hour=3
+    minute=36
+
+- name: run update spamscript
+  sudo_user: "{{ tendenci_user }}"
+  ignore_errors: yes
+  when: "{{ kitchen_run }} == False"
+  django_manage: >
+    app_path={{ tendenci_base_dir }}
+    virtualenv={{ tendenci_virtenv_dir }}
+    command=sfsupdate

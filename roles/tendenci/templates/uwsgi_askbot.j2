@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+[uwsgi]
+
+# Path of the uWSGI INI file.
+uwsgi_ini="{{ tendenci_conf_dir }}/uwsgi.ini"
+
+# Path of the log file.
+log_file="{{ tendenci_logs_dir }}/uwsgi.log"
+
+# The user to run your application as.
+user="tendenci"
+
+# Additional uwsgi options.
+#uwsgi_opts=""

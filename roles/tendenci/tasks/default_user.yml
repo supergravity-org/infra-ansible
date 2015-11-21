@@ -1,0 +1,8 @@
+- name: add demo user
+  sudo_user: "{{ tendenci_user }}"
+  when: "{{ kitchen_run|default(False)}} == True"
+  django_manage: >
+    app_path={{ tendenci_base_dir }}
+    virtualenv={{ tendenci_virtenv_dir }}
+    command="add_user --user=admin --email=example@example.com --superuser --password=admin"
+  tags: demouser

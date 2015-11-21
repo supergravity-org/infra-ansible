@@ -1,0 +1,43 @@
+---
+- name: add docker repo
+  apt_repository: >
+    repo='deb https://apt.dockerproject.org/repo ubuntu-{{ ansible_distribution_release }} main'
+    state=present
+  when: ansible_distribution == 'Ubuntu'
+
+- apt_key: url=https://apt.dockerproject.org/gpg state=present
+
+- name: Install (or update) docker-engine
+  apt:
+    name: docker-engine
+    state: latest
+    update_cache: yes
+  when: "ansible_distribution_version == '14.04'"
+
+# - name: Link docker binaries
+#   file:
+#     src: /usr/bin/docker.io
+#     dest: /usr/local/bin/docker
+#     owner: root
+#     group: root
+#     state: link
+#   when: "ansible_distribution_version == '14.04'"
+
+- name: Check if docker installed
+  command: /usr/bin/test -e /etc/default/docker
+  register: docker_installed
+
+- name: Enable bash completion
+  lineinfile:
+    dest=/etc/bash_completion.d/docker
+    regexp='THAT STRING WILL NOT BE FOUND'
+    line="complete -F _docker docker"
+  when: docker_installed
+
+- name: Expose docker host
+  lineinfile:
+    dest=/etc/default/docker
+    regexp="^#DOCKER_OPTS.*"
+    line="DOCKER_OPTS=\"-H unix:// -H tcp://{{ docker_host_ip }}:{{ docker_host_port }}\""
+  notify: "restart docker"
+  when: "docker_installed and export_docker_host"

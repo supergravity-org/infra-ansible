@@ -1,0 +1,64 @@
+---
+# - name: configure tendenci and uwsgi
+#   template: >
+#     src={{ item }}.j2
+#     dest={{ tendenci_conf_dir }}/{{ item }}
+#     owner={{ tendenci_user }}
+#     group={{ tendenci_group }}
+#   with_items:
+#     - settings.py
+#   notify: restart tendenci
+
+- name: generate random session_key
+  shell: >
+    openssl rand -base64 34 | head -c 24 > {{ tendenci_conf_dir }}/{{item}}
+    creates={{ tendenci_conf_dir }}/{{item}}
+  notify: restart tendenci
+  with_items:
+    - session_key
+    - settings_key
+
+- name: ensure rights of session_key file
+  file: >
+    path={{ tendenci_conf_dir }}/{{item}}
+    owner={{ tendenci_user }}
+    group=www-data
+    mode=0640
+  with_items:
+    - session_key
+    - settings_key
+
+- name: create local config
+  template: >
+    src=settings_local.py.j2
+    dest={{ tendenci_conf_dir }}/local_settings.py
+    owner={{ tendenci_user }}
+    group={{ tendenci_group }}
+
+#
+# - name: copy manage.py
+#   copy: >
+#     src=manage.py
+#     dest={{ tendenci_base_dir }}/manage.py
+#     owner={{ tendenci_user }}
+#     group={{ tendenci_group }}
+#     mode=0644
+#
+# - name: copy urls.py and wsgi.py
+#   copy: >
+#     src={{ item }}
+#     dest={{ tendenci_conf_dir }}/{{ item }}
+#     owner={{ tendenci_user }}
+#     group={{ tendenci_group }}
+#     mode=0644
+#   with_items:
+#     - urls.py
+#     - wsgi.py
+#     - __init__.py
+#
+# - name: symlink config directory
+#   file: >
+#     state=link
+#     src={{ tendenci_conf_dir }}
+#     dest={{ tendenci_base_dir }}/conf
+#   when: tendenci_conf_dir != tendenci_base_dir + '/conf'

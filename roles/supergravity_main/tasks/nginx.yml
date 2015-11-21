@@ -2,7 +2,7 @@
 - name:  Nginx config NO SSL
   template: src=nginx.j2
             dest=/etc/nginx/sites-available/{{ wagtail_name }}
-            backup=yes
+            backup=no
   notify: nginx_restart
   tags:
     - no_ssl

@@ -1,0 +1,17 @@
+[program:discourse]
+command=/var/discourse/launcher start app
+process_name=%(program_name)s
+numprocs=1
+directory=/var/discourse
+autostart=true
+autorestart=true
+startsecs=120
+startretries=3
+exitcodes=0,2
+stopsignal=TERM
+stopwaitsecs=10
+redirect_stderr=true
+stdout_logfile=/var/log/discourse/discourse.log
+stdout_logfile_maxbytes=1MB
+stdout_logfile_backups=10
+stdout_capture_maxbytes=1MB

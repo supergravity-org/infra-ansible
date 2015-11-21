@@ -1,0 +1,21 @@
+---
+- include: install.yml tags=install
+- include: configure.yml tags=config
+
+- name: collect static media files
+  sudo_user: "{{ tendenci_user }}"
+  django_manage: >
+    app_path={{ tendenci_base_dir }}
+    virtualenv={{ tendenci_virtenv_dir }}
+    command=collectstatic
+
+- include: database.yml tags=database
+# - include: spamprotect.yml tags=spamprotect
+
+- include: default_user.yml tags=users
+
+- include: uwsgi.yml
+  when: ansible_os_family == "Gentoo"
+
+- include: uwsgi-debian.yml
+  when: ansible_os_family == "Debian"

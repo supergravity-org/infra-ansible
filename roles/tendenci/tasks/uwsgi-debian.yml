@@ -1,0 +1,34 @@
+---
+- name: configure runscript
+  template: >
+    src=uwsgi.ini.j2
+    dest=/etc/uwsgi-emperor/vassals/{{ tendenci_name }}.ini
+    owner=root group=root mode=0644
+    force=true
+  notify: restart tendenci
+  tags: config
+# - name: configure runscript
+#   file: >
+#     src={{ tendenci_conf_dir }}/uwsgi.ini
+#     dest=/etc/uwsgi-emperor/vassals/{{ tendenci_name }}.ini
+#     owner=root group=root mode=0644
+#     state=link
+#   notify: restart tendenci
+#   tags: config
+
+- name: install uwsgi-plugin-python
+  apt: package=uwsgi-plugin-python
+  notify: restart tendenci
+
+# - name: symlink uwsgi runscript for tendenci
+#   file: >
+#     state=link
+#     src=/etc/init.d/uwsgi
+#     dest=/etc/init.d/{{ tendenci_name }}
+
+- name: enable and start tendenci
+  service: >
+    name=uwsgi-emperor
+    enabled=yes
+    state=started
+  tags: services

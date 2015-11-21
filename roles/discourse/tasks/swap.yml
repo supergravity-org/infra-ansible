@@ -1,0 +1,39 @@
+---
+
+- name: Create and activate a swapfile
+  shell: install -o root -g root -m 0600 /dev/null /swapfile && dd if=/dev/zero of=/swapfile bs=1k count=1024k &&  mkswap /swapfile && swapon /swapfile
+  args:
+    creates: /swapfile
+
+- name: Search if fstab entry exists
+  shell: grep "/swapfile  swap  swap  auto    0   0" /etc/fstab
+  register: fstab_swap
+  ignore_errors: true
+
+- name: Add to fstab
+  shell: echo "/swapfile  swap  swap  auto    0   0" >> /etc/fstab
+  when: fstab_swap|failed
+
+- name: Search if swapiness is already defined
+  shell: grep "vm.swappiness" /etc/sysctl.conf
+  register: swappiness
+  ignore_errors: true
+
+- name: Set the swappiness to 10
+  shell: "{{ item }}"
+  with_items:
+    - sysctl -w vm.swappiness=10
+    - echo "vm.swappiness = 10" >> /etc/sysctl.conf
+  when: swappiness|failed
+
+- name: Search if overcommit_memory is already defined
+  shell: grep "vm.overcommit_memory = 1" /etc/sysctl.conf
+  register: overcommit
+  ignore_errors: true
+
+- name: Set the overcommit_memory to 1
+  shell: "{{ item }}"
+  with_items:
+    - sysctl -w vm.overcommit_memory=1
+    - echo "vm.overcommit_memory = 1" >> /etc/sysctl.conf
+  when: overcommit|failed

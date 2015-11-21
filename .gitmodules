@@ -4,3 +4,12 @@
 [submodule "roles/axil42.discourse"]
 	path = roles/axil42.discourse
 	url = https://github.com/axilleas/ansible-role-discourse.git
+[submodule "roles/goetzk.spamassassin"]
+	path = roles/goetzk.spamassassin
+	url = https://github.com/goetzk/ansible-spamassassin
+[submodule "sg_tendenci/django-simple-sso"]
+	path = sg_tendenci/django-simple-sso
+	url = https://github.com/aldryn/django-simple-sso.git
+[submodule "sg_tendenci/extern/django-simple-sso"]
+	path = sg_tendenci/extern/django-simple-sso
+	url = https://github.com/aldryn/django-simple-sso.git

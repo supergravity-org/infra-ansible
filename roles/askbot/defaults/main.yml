@@ -3,7 +3,7 @@
 askbot_repo_url: https://github.com/ASKBOT/askbot-devel
 
 # Version to checkout.
-askbot_version: 0.7.53.1
+askbot_version: 0.7.x
 
 # Name of this Askbot instance.
 askbot_name: askbot
@@ -124,7 +124,7 @@ askbot_cache_location: [ 'redis://{{ redis_bind }}:{{ redis_port }} ']
 
 # The default timeout to use for the cache (seconds).
 # Django cache argument `TIMEOUT`.
-askbot_cache_timeout: 3600
+askbot_cache_timeout: '{% if kitchen_run %}5{% else %}3600{% endif %}'
 
 #
 # E-mails
@@ -152,5 +152,7 @@ askbot_smtp_default_from: "{{ smtp_noreply | default('no-reply@example.org') }}"
 askbot_smtp_subject_prefix: '[Askbot] '
 
 askbot_akismet_key: false
+
+askbot_recaptcha_key: false
 
 kitchen_run: false

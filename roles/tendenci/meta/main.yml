@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Jakub Jirutka
+  company: CTU in Prague
+  description: Deploy Askbot
+  license: MIT
+  min_ansible_version: 1.8
+  platforms:
+    - name: Ubuntu
+  categories:
+    - web
+
+dependencies:
+  - cchurch.uwsgi

@@ -1,0 +1,71 @@
+---
+- name: create database user
+  delegate_to: "{{ tendenci_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_user: >
+    name={{ tendenci_db_user }}
+    password="{{ tendenci_db_pass }}"
+  tags: accounts
+
+- name: create database
+  delegate_to: "{{ tendenci_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_db: >
+    name={{ tendenci_db_name }}
+    owner={{ tendenci_db_user }}
+
+- name: activate extensions
+  delegate_to: "{{ tendenci_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_ext: >
+    name={{item}}
+    db={{tendenci_db_name}}
+  with_items:
+    - postgis
+    - postgis_topology
+    - fuzzystrmatch
+    - postgis_tiger_geocoder
+
+- name: create wrapper script
+  template: src=venv_exec.j2 dest={{ tendenci_virtenv_dir }}/exec mode=755
+
+- file: dest={{tendenci_base_dir}}/migrate_initials.sh mode=0755
+
+- name: run database migrations
+  command: "{{ tendenci_virtenv_dir }}/exec {{tendenci_base_dir}}/migrate_initials.sh"
+  args:
+    chdir: "{{ tendenci_base_dir }}"
+
+- name: run database migrations
+  command: "{{ tendenci_virtenv_dir }}/exec python {{tendenci_base_dir}}/deploy.py"
+  ignore_errors: True
+  args:
+    chdir: "{{ tendenci_base_dir }}"
+
+- name: check for empty db
+  stat: path={{ tendenci_base_dir }}/media/files/Staff/d278f3d6/Tendenci-Stock-Images-by-Ed-Schipul-2011-94-a8fc5_medium_640.jpg
+  register: tentemp
+
+- name: initialize database
+  sudo_user: "{{ tendenci_user }}"
+  when: tentemp.stat.exists == False
+  django_manage: >
+    app_path={{ tendenci_base_dir }}
+    virtualenv={{ tendenci_virtenv_dir }}
+    command=load_base_defaults
+    creates=./media/files/Staff/d278f3d6/Tendenci-Stock-Images-by-Ed-Schipul-2011-94-a8fc5_medium_640.jpg
+
+# - name: initialize database
+#   sudo_user: "{{ tendenci_user }}"
+#   django_manage: >
+#     app_path={{ tendenci_base_dir }}
+#     virtualenv={{ tendenci_virtenv_dir }}
+#     command=syncdb
+#
+# - name: run database migrations
+#   sudo_user: "{{ tendenci_user }}"
+#   django_manage: >
+#     app_path={{ tendenci_base_dir }}
+#     virtualenv={{ tendenci_virtenv_dir }}
+#     command=migrate
+#   tags: migrate

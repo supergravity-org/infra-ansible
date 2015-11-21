@@ -1,0 +1,9 @@
+---
+- hosts: web
+  sudo: true
+  tasks:
+    - { include: 'tasks/web.yml' }
+    - { include: 'tasks/mail.yml' }
+
+    # add ask.supergravity.local, ... to /etc/hosts
+    # add redirect port 8080 -> 80 in kitchen

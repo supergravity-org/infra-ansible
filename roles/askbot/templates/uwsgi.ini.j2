@@ -2,13 +2,14 @@
 [uwsgi]
 
 # Path of the log file.
-log_file={{ askbot_logs_dir }}/uwsgi.log
+req-logger = file:{{ askbot_logs_dir }}/uwsgi-access.log
+logger = file:{{ askbot_logs_dir }}/uwsgi-error.log
 
 # The user to run your application as.
 uid=askbot
 gid=www-data
 
-plugins = python27
+plugins = logfile,python27
 
 enable-threads=true
 

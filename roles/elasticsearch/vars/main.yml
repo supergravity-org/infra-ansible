@@ -1,0 +1,5 @@
+# role default variables
+
+container_name: elasticsearch
+
+container_image: elasticsearch

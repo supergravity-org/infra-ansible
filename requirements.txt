@@ -2,3 +2,4 @@ ansible
 cookiecutter==1.0
 cryptography
 PyYAML
+docker-py

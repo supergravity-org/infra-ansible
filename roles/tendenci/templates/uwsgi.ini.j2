@@ -1,0 +1,48 @@
+# {{ ansible_managed }}
+[uwsgi]
+
+# Path of the log file.
+log_file={{ tendenci_logs_dir }}/uwsgi.log
+
+# The user to run your application as.
+uid=tendenci
+gid=www-data
+
+plugins = python27
+
+enable-threads=true
+
+# base directory (full path)
+chdir = {{ tendenci_base_dir }}
+
+# django's wsgi file
+module = conf.wsgi
+
+# map static content
+static-map = /static={{ tendenci_base_dir }}/static
+static-map = /uploads={{ tendenci_uploads_dir }}
+
+# virtualenv directory (full path)
+home = {{ tendenci_virtenv_dir }}
+
+# unix socket path
+socket = {{ tendenci_uwsgi_socket }}
+
+# maximum number of worker processes
+processes = {{ tendenci_uwsgi_processes }}
+
+# clear environment on exit
+vacuum = true
+
+# disable request logging
+disable-logging = false
+
+{% for k, v in tendenci_uwsgi_params.items() %}
+{%   if v is string or v is number %}
+{{ k }} = {{ v }}
+{%   else %}
+{%     for item in v %}
+{{ k }} = {{ v }}
+{%     endfor %}
+{%   endif %}
+{% endfor %}

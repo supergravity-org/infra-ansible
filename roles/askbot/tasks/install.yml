@@ -69,6 +69,8 @@
     - httplib2
     - markupsafe
     - stopforumspam
+    - jsonfield
+    - requirements-parser
 
 - name: freeze django-robots
   lineinfile: >

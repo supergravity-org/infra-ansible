@@ -1,6 +1,6 @@
 server {
-    listen 80;
-    server_name  {% for host in wagtail_hostname %}{{ host }} {% endfor %};
+    listen 443;
+    server_name  {% for host in wagtail_hostname %}www.{{ host }} {% endfor %};
     return 301 https://{{ wagtail_hostname[0] }}$request_uri;
 }
 
@@ -23,9 +23,9 @@ server {
 
         ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
+        {% if ca_cert %}
         ssl_stapling on;
         ssl_stapling_verify on;
-        {% if ca_cert %}
         ssl_trusted_certificate /etc/ssl/certs/{{ ca_cert }};
         {% endif %}
 

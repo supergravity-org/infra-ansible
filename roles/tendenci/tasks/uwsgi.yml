@@ -1,0 +1,21 @@
+---
+- name: configure runscript
+  template: >
+    src=uwsgi_tendenci.j2
+    dest=/etc/conf.d/{{ tendenci_name }}
+    owner=root group=root mode=0644
+  notify: restart tendenci
+  tags: config
+
+- name: symlink uwsgi runscript for tendenci
+  file: >
+    state=link
+    src=/etc/init.d/uwsgi
+    dest=/etc/init.d/{{ tendenci_name }}
+
+- name: enable and start tendenci
+  service: >
+    name={{ tendenci_name }}
+    enabled=yes
+    state=started
+  tags: services

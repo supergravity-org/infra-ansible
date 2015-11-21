@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# current dir this script is run from
+DIR=$( cd "$( dirname "$0" )" && pwd )
+
+openssl req \
+  -nodes \
+  -x509 \
+  -sha256 \
+  -newkey rsa:4096 \
+  -keyout "${DIR}/self_ssl.key" \
+  -out "${DIR}/self_ssl.crt" \
+  -days 365 \
+  -subj "/C=CC/ST=State/L=MyCity/O=Organisation/OU=OrgUnit/CN=staging.discourse.local"
+

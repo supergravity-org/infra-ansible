@@ -1,0 +1,25 @@
+---
+  - name: update /etc/hosts
+    replace: >
+      dest=/etc/hosts
+      regexp='^127\.0\.0\.1(.*)$'
+      replace='127.0.0.1 localhost {% for h in local_hostnames %} {{h}}{% endfor %}'
+
+  - name: update /etc/rc.local
+    replace: >
+      dest=/etc/rc.local
+      regexp='^exit 0$'
+
+  - name: add redirect
+    register: ipta
+    lineinfile: >
+      dest=/etc/rc.local
+      line='iptables -t nat -I OUTPUT -d 127.0.0.1 -p tcp --dport 8080 -j REDIRECT --to-port 80'
+
+  - name: execute iptables
+    when: ipta.changed
+    command: iptables -t nat -I OUTPUT -d 127.0.0.1 -p tcp --dport 8080 -j REDIRECT --to-port 80
+
+  # - name: write /etc/hosts
+  #   template: <
+  #     src=

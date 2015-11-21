@@ -4,8 +4,7 @@
   service: name=exim4 state=restarted
 
 - name: restart saslauthd
-  service: name=saslauthd restarted
+  service: name=saslauthd state=restarted
 
 - name: restart clamav
-  service: name=clamav restarted
-
+  service: name=clamav state=restarted
