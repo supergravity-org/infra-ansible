@@ -2,19 +2,19 @@
 # handlers file for discourse
 
 - name: launcher rebuild
-  shell: /var/discourse/launcher rebuild app
+  shell: "/var/discourse/launcher rebuild {{discourse_name}}"
 
 - name: launcher bootstrap
-  shell: /var/discourse/launcher bootstrap app
+  shell: "/var/discourse/launcher bootstrap {{ discourse_name }}"
 
 - name: launcher start
-  shell: /var/discourse/launcher start app
+  shell: "/var/discourse/launcher start {{ discourse_name }}"
 
 - name: launcher stop
-  shell: /var/discourse/launcher stop app
+  shell: "/var/discourse/launcher stop {{ discourse_name }}"
 
 - name: launcher restart
-  shell: /var/discourse/launcher restart app
+  shell: "/var/discourse/launcher restart {{ discourse_name }}"
 
 - name: launcher destroy
-  shell: /var/discourse/launcher destroy app
+  shell: "/var/discourse/launcher destroy {{ discourse_name }}"

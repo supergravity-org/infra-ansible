@@ -2,6 +2,7 @@
 - hosts: www
   sudo: true
   roles:
+     - { role: goetzk.exim }
      - { role: sgbasics,
          tags: ['sgbasics']
        }
@@ -18,120 +19,13 @@
      - { role: supergravity_main,
          tags: ['supergravity_main']}
      - { role: discourse,
-         discourse_hostname: 'discuss.supergravity.org',
-         discourse_git_branch: 'master',
          tags: ['discourse'],
-         discourse_smtp_address: '{{ansible_eth0.ipv4.address}}',
-         discourse_redis: '{{ansible_eth0.ipv4.address}}',
-         discourse_db_host: "{{ansible_eth0.ipv4.address}}"
         }
      - { role: jdauphant.nginx }
+
+  vars_files:
+    - "group_vars/web.yml"
 
   pre_tasks:
     - { include: 'tasks/ssl.yml'}
     # - { include: ''}
-
-  vars:
-    uwsgi_emperor_uid: 'root'
-    uwsgi_emperor_gid: 'root'
-    askbot_domain: ask.supergravity.org
-    askbot_url: http://ask.supergravity.org
-    askbot_smtp_default_from: ask@supergravity.org
-    askbot_name: ask_sglabs
-    askbot_smtp_subject_prefix: '[ask sg]'
-    askbot_cache_location: '127.0.0.1:11211'
-    askbot_uwsgi_socket: '{{askbot_base_dir}}/uwsgi-askbot.socket'
-    askbot_timezone: 'Europe/Berlin'
-    askbot_multilang: true
-    askbot_cache: true
-    askbot_multilang_langs: ['en', 'de']
-    askbot_admins:
-      - sglabs-admin@poelzi.org
-    pg_host: "{{ansible_eth0.ipv4.address}}"
-    wagtail_hostname: [blog.supergravity.org, blog.supergravity.local]
-    wagtail_name: supergravity_main
-    wagtail_src_path: supergravity_main
-    wagtail_settings: supergravity_main.settings.local
-    wagtail_uwsgi_socket: '{{wagtail_base_dir}}/uwsgi.socket'
-    wagtail_test: true
-    redis_bind: ['0.0.0.0']
-    use_ssl: true
-    ssl_cert: 'supergravity.crt'
-    ssl_private_key: 'supergravity.key'
-    ca_cert: 'cacert-class3.pem'
-    tendenci_src_root: 'sg_tendenci'
-
-    tendenci_domain: supergravity.org
-    tendenci_smtp_default_from: web@supergravity.org
-    tendenci_name: sg_web
-    # tendenci_smtp_subject_prefix: '[ask sg]'
-    tendenci_cache_location: '127.0.0.1:11211'
-    tendenci_uwsgi_socket: '{{tendenci_base_dir}}/uwsgi-tendenci.socket'
-    tendenci_timezone: 'Europe/Berlin'
-    tendenci_cache: true
-    tendenci_multilang_langs: ['en', 'de']
-    tendenci_admins:
-      - sglabs-admin@poelzi.org
-    postgresql_conf:
-      listen_addresses: "'*'"
-    postgresql_pg_hba_conf:
-      - "host    all             all             {{ansible_eth0.ipv4.address}}/32                 md5"
-      - "{% if ansible_docker0 %}host    all             all             {{ansible_docker0.ipv4.address}}/16              md5{% endif %}"
-    nginx_configs:
-      http:
-        - server_names_hash_bucket_size 128
-        - proxy_headers_hash_bucket_size 128
-        - proxy_headers_hash_max_size 1024
-      upstream:
-        - upstream askbot { server unix://{{askbot_base_dir}}/uwsgi-askbot.socket; }
-        - upstream supergravity_main { server unix://{{wagtail_base_dir}}/uwsgi.socket; }
-        - upstream tendenci { server unix://{{tendenci_base_dir}}/uwsgi-tendenci.socket; }
-    nginx_sites:
-      default:
-        - listen 80
-        - server_name _
-        - root "/usr/share/nginx/html"
-        - index index.html
-      ask:
-        - listen 80
-        - server_name ask.supergravity.org ask.supergravity.local
-        - root "/var/www"
-        - location / { uwsgi_pass  askbot; include /etc/nginx/uwsgi_params; }
-      ask_ssl:
-        - listen 443
-        - server_name ask.supergravity.org ask.supergravity.local
-        - ssl on
-        - ssl_certificate /etc/ssl/certs/supergravity.crt
-        - ssl_certificate_key /etc/ssl/private/supergravity.key
-        - ssl_session_cache shared:SSL:20m
-        - ssl_session_timeout 10m
-        - ssl_prefer_server_ciphers on
-        - ssl_ciphers ECDH+AESGCM:ECDH+AES256:ECDH+AES128:DH+3DES:!ADH:!AECDH:!MD5
-        - ssl_dhparam /etc/ssl/dhparam.pem
-        - ssl_protocols TLSv1.1 TLSv1.2
-        - '{% if ca_cert %}ssl_stapling on{% endif %}'
-        - '{% if ca_cert %}ssl_stapling_verify on{% endif %}'
-        - '{% if ca_cert %}ssl_trusted_certificate /etc/ssl/certs/{{ ca_cert }}{% endif %}'
-        - root "/var/www"
-        - location / { uwsgi_pass  askbot; include /etc/nginx/uwsgi_params; }
-      tendenci:
-         - listen 80
-         - server_name supergravity.org www.supergravity.org supergravity.local
-         - root "/var/www"
-         - "location /media { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/media; }"
-         - "location /static { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/static; }"
-         - "location /themes { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/themes; }"
-         - location / { uwsgi_pass tendenci; include /etc/nginx/uwsgi_params; }
-      discuss:
-         - listen 80
-         - server_name discuss.supergravity.org discuss.supergravity.local
-         - root "/var/www"
-         - >
-           location / {
-            proxy_pass http://localhost:3080/;
-            proxy_set_header Host      $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-Host $host;
-            proxy_set_header X-Forwarded-Server $host;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            include /etc/nginx/proxy_params;  }

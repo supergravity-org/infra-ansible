@@ -42,7 +42,7 @@
 - name: Copy application yaml
   template:
     src: '{{discourse_app}}.j2'
-    dest: "{{ discourse_docker_path }}/containers/app.yml"
+    dest: "{{ discourse_docker_path }}/containers/{{discourse_name}}.yml"
     owner: root
     group: root
     mode: 644
@@ -80,12 +80,12 @@
 #   ignore_errors: True
 #   changed_when: False
 
-- shell: "docker ps | local_discourse/app"
+- shell: "docker ps -f name={{discourse_name}} | grep {{discourse_name}}"
   register: discourse_running
   ignore_errors: True
   changed_when: False
 
-- shell: /var/discourse/launcher rebuild app
+- shell: "/var/discourse/launcher rebuild {{discourse_name}}"
   when: discourse_running.rc != 0
 
 

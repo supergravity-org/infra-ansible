@@ -35,6 +35,8 @@ suites:
       hosts: www
       additional_copy_path:
         - supergravity_main
+        - group_vars
+        - host_vars
         - sg_tendenci
         - tasks
         - action_plugins

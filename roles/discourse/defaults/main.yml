@@ -1,5 +1,11 @@
 ---
 #####
+## name of discourse instance
+#####
+
+discourse_name: discourse
+
+#####
 ## Git url to pull discourse_docker from.
 #####
 discourse_docker_git_repo: 'https://github.com/discourse/discourse_docker.git'
@@ -26,15 +32,68 @@ discourse_unicorn_workers: 2
 # listen to this address for http
 discourse_listen_port: 3080
 
-discourse_developer_emails: []
-
+#####
+## App template to use
+#####
 discourse_app: 'app_webonly.yml'
 
-discourse_smtp_address: ''
 discourse_db_delegate_to: null
+
+discourse_smtp_address: '/var/discourse'
 
 discourse_db_name: 'discourse'
 discourse_db_user: 'discourse'
 discourse_db_password: 'discourse'
 discourse_db_host: 'localhost'
 discourse_redis: 'localhost'
+
+#####
+## Main discourse docker location.
+#####
+discourse_docker_path: /var/discourse
+
+#####
+## The domain name this Discourse instance will respond to.
+#####
+discourse_hostname: 'discourse.example.com'
+
+#####
+## The mailserver this Discourse instance will use.
+## SMTP username and password are set in vars/private.yml.
+#####
+discourse_smtp_address: smtp.example.com
+discourse_smtp_port: 587
+
+####
+## The CDN address for this Discourse instance (configured to pull).
+####
+discourse_cdn_url: False
+
+####
+## Enable SSL in Nginx and expose docker port.
+## Remember to put your certs in files/ssl/.
+## https://meta.discourse.org/t/allowing-ssl-for-your-discourse-docker-setup
+####
+discourse_ssl_nginx: '  - "templates/web.ssl.template.yml"'
+discourse_ssl_docker: '  - "443:443" # fwd host port 443  to container port 443 (https)'
+
+####
+## Enable plugins here. This is a list. Make sure the repository is public.
+## Example:
+## discourse_plugins:
+##   - https://github.com/username/plugin1.git
+##   - https://gitlab.com/username/plugin2.git
+####
+discourse_plugins: []
+
+#####
+## List of emails that will be made admin and developer on initial signup.
+#####
+discourse_developer_emails: []
+
+#####
+## SMTP username and password of the mailserver this Discourse instance
+## will use. For passwordless authentication leave empty.
+#####
+discourse_smtp_user_name: ''
+discourse_smtp_password: ''
