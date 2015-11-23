@@ -21,10 +21,6 @@ if not settings.USE_S3_STORAGE:
         }),
     )
 
-urlpatterns += patterns(
-    url(r'^auth/oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    url(r'^auth/cas/',  include('mama_cas.urls'))
-)
 # Local url patterns for development
 try:
     from local_urls import extrapatterns

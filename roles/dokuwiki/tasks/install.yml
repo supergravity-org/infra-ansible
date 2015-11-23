@@ -1,0 +1,91 @@
+---
+  - name: install packages
+    apt: name={{item}}
+    with_items:
+      - unzip
+
+  - name: create build directory
+    file: path={{dokuwiki_builddir}} state=directory recurse=true
+  - name: create data directory
+    # user www-data:www-data inside the docker container
+    file: >
+      path={{dokuwiki_datadir}}/{{item}}
+      state=directory
+      recurse=true
+      owner=33
+      group=33
+    with_items:
+      - conf
+      - 'data/attic'
+      - 'data/media'
+      - 'data/media_attic'
+      - 'data/media_meta'
+      - 'data/meta'
+      - 'data/pages'
+
+  - name: write config file
+    template: dest={{dokuwiki_builddir}}/Dockerfile src=docker_template.j2
+    register: result
+
+
+  - name: make backup
+    when: 'result.changed'
+    ignore_errors: true
+    command: docker tag {{ dokuwiki_name }}:latest {{ dokuwiki_name }}:bak-{{ansible_date_time.epoch}}
+
+  - name: build docker image
+    when: 'result.changed'
+    action: command docker build -t {{ dokuwiki_name }} -t {{ dokuwiki_name }}:latest .
+    args:
+      chdir: "{{dokuwiki_builddir}}"
+
+  - name: drop old docker container
+    when: 'result.changed'
+    ignore_errors: true
+    docker:
+      name: '{{ dokuwiki_name}}'
+      image: '{{ dokuwiki_name}}:latest'
+      state: absent
+    with_items:
+      - '{{ dokuwiki_name}}'
+      - '{{ dokuwiki_name}}-copy'
+
+  - name: start copy template
+    when: 'result.changed'
+    docker:
+      name: '{{ dokuwiki_name}}-copy'
+      image: '{{ dokuwiki_name}}'
+      state: started
+      command: '/bin/sleep 120'
+
+  - name: copy config files from new container
+    when: 'result.changed'
+    command: >
+      docker cp {{ dokuwiki_name}}-copy:/var/www/conf/ {{dokuwiki_datadir}}/
+
+  - name: destroy copy container
+    when: 'result.changed'
+    docker:
+      name: '{{ dokuwiki_name}}-copy'
+      image: '{{ dokuwiki_name}}'
+      state: absent
+
+  - name: start docker image
+    docker:
+      name: '{{ dokuwiki_name}}'
+      image: '{{ dokuwiki_name}}'
+      state: started
+      ports:
+        - '{{ dokuwiki_port }}:80'
+      volumes:
+        - '{{ dokuwiki_datadir }}:/var/dokuwiki-storage'
+
+  # - name: create data container
+  #   docker:
+  #     name: '{{ dokuwiki_name}}-data'
+  #     image: busybox
+  #     state: started
+  #     volumes_from:
+  #       - '{{ dokuwiki_name }}'
+  #- name: clone repository
+  #  git: >

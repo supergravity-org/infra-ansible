@@ -1,4 +1,4 @@
-from django.conf.urls import include, patterns
+from django.conf.urls import include, patterns, url
 
 # Add additional url patterns for additional apps
 # here and they will be included in the main urls.py
@@ -15,4 +15,9 @@ extrapatterns = patterns('',
      ('^', include('tendenci.apps.videos.urls')),
      ('^', include('tendenci.apps.testimonials.urls')),
      (r'^', include('tendenci.apps.social_services.urls')),
+)
+
+extrapatterns += patterns('',
+    url(r'^auth/o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^auth/cas/',  include('mama_cas.urls')),
 )

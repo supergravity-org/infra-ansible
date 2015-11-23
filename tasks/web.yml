@@ -9,6 +9,8 @@
      - { role: install-docker}
      - { role: galaxyprojectdotorg.postgresql}
      - { role: tersmitten.redis}
+     - { role: dokuwiki,
+         tags: ['dokuwiki']}
      - { role: elasticsearch,
          container_name: elasticsearch,
          data_dir: '/var/lib/elasticsearch' }
