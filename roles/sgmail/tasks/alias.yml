@@ -1,0 +1,17 @@
+---
+  - name: prepare virtual
+    file: path=/etc/exim4/virtual state=directory
+
+  - name: add aliases - supergravity.local
+    lineinfile: >
+      dest="/etc/exim4/virtual/supergravity.local"
+      create=yes
+      line="{{item}}"
+    with_items: default_aliases
+
+  - name: add aliases - supergravity.org
+    lineinfile: >
+      dest="/etc/exim4/virtual/supergravity.org"
+      create=yes
+      line="{{item}}"
+    with_items: default_aliases

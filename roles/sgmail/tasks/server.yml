@@ -1,0 +1,14 @@
+---
+  - name: add clamav
+    apt: name={{item}}
+    with_items:
+      - clamav-daemon
+      - clamav-freshclam
+
+  - name: activate clamav-daemon
+    service: name=clamav-daemon state=started
+
+  - name: Allow ClamAV access to Exims mail spool
+    when: exim_av_scanner_enable
+    user: append=yes createhome=no name=Debian-exim groups='clamav'
+    notify: restart exim4

@@ -1,0 +1,6 @@
+---
+# vars file for sgmail
+
+default_aliases:
+  - 'no-reply: :blackhole:'
+  - 'noreply: :blackhole:'

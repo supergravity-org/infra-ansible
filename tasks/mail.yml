@@ -2,7 +2,5 @@
 - hosts: mail
   sudo: true
   roles:
-     - goetzk.exim
-  vars:
-     - exim_domainlist_local_domains: '@:localhost:supergravity.org'
-     - exim_primary_hostname: supergravity.org
+     - exim
+     - sgmail

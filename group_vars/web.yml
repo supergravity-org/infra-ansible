@@ -113,6 +113,8 @@ nginx_sites:
      - listen 80
      - server_name supergravity.org www.supergravity.org supergravity.local
      - root "/var/www"
+     - access_log {{ tendenci_logs_dir }}/nginx-access.log
+     - error_log {{ tendenci_logs_dir }}/nginx-error.log
      - "location /media { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/media; }"
      - "location /static { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/static; }"
      - "location /themes { autoindex {{ kitchen_run and 'on' or 'off' }}; alias {{ tendenci_base_dir}}/themes; }"

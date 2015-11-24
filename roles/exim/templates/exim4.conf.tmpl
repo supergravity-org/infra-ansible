@@ -4,7 +4,7 @@
 # jinja templating for code block with two {, http://jinja.pocoo.org/docs/dev/templates/#escaping
 # SPF:
 # http://www.tty1.net/blog/2007/fighting-spam-with-exim4_en.html (receiving mail)
-# 
+#
 # DKIM:
 # http://www.exim.org/exim-html-current/doc/html/spec_html/ch-support_for_dkim_domainkeys_identified_mail.html
 # http://joshtronic.com/2012/11/12/exim4-dkim-multiple-domains/ (sending dkim mail)
@@ -371,7 +371,7 @@ begin acl
 # It is meant to be used from some other acl entry.
 #
 # See exim4-config_files(5) for details.
-# If the files do not exist, the white list never matches, which is 
+# If the files do not exist, the white list never matches, which is
 # the desired behaviour.
 
 acl_local_deny_exceptions:
@@ -394,7 +394,7 @@ acl_check_dkim:
 # {% endif %}
 
 # Accept any message dkim message
-  accept 
+  accept
 
 # This access control list is used for every RCPT command in an incoming
 # SMTP message. The tests are run in order until the address is either
@@ -462,7 +462,7 @@ acl_check_rcpt:
 
   # Deny unless the sender address can be verified.
 
-  require verify        = sender
+  # require verify        = sender
 
   # Accept if the message comes from one of the hosts for which we are an
   # outgoing relay. It is assumed that such hosts are most likely to be MUAs,
@@ -703,7 +703,7 @@ dnslookup:
   driver = dnslookup
   domains = ! +local_domains
   transport = remote_smtp
-{% if 'exim_transport_remote_smtp_dkim_enable' %}
+{% if exim_transport_remote_smtp_dkim_enable %}
 # Enable DKIM if that is enabled for sending
   same_domain_copy_routing = yes
   senders = lsearch*@;/etc/exim4/dkim-senders.list
@@ -748,6 +748,19 @@ system_aliases:
 # user = exim
   file_transport = address_file
   pipe_transport = address_pipe
+
+
+vdom_aliases:
+  driver = redirect
+  allow_defer
+  allow_fail
+  domains = dsearch;/etc/exim4/virtual
+  data = ${expand:${lookup{$local_part}lsearch*@{/etc/exim4/virtual/$domain}}}
+  retry_use_local_part
+  pipe_transport   = address_pipe
+  file_transport   = address_file
+  no_more
+
 
 
 # This router handles forwarding using traditional .forward files in users'
@@ -830,7 +843,7 @@ begin transports
 
 remote_smtp:
   driver = smtp
-{% if 'exim_transport_remote_smtp_dkim_enable' %}
+{% if exim_transport_remote_smtp_dkim_enable %}
   dkim_domain   = {{ exim_transport_remote_smtp_dkim_domain | default('${lookup{$sender_address}lsearch*@{/etc/exim4/dkim-senders.list}}') }}
   dkim_selector = {{ exim_transport_remote_smtp_dkim_selector | default('$dkim_domain') }}
   dkim_private_key = {{ exim_transport_remote_smtp_dkim_private_key | default('') }}

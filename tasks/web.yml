@@ -2,7 +2,10 @@
 - hosts: www
   sudo: true
   roles:
-     - { role: goetzk.exim }
+     - { role: exim,
+         tags: ['mail']}
+     - { role: sgmail,
+         tags: ['mail']}
      - { role: sgbasics,
          tags: ['sgbasics']
        }
@@ -26,6 +29,7 @@
      - { role: jdauphant.nginx }
 
   vars_files:
+    - "group_vars/mail.yml"
     - "group_vars/web.yml"
 
   pre_tasks:

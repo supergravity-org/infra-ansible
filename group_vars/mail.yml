@@ -1,0 +1,7 @@
+# exim_fail2ban_enable: true
+# exim_group:
+exim_transport_remote_smtp_dkim_enable: false
+exim_av_scanner_enable: true
+exim_hostlist_relay_from_hosts: 'localhost: ip6-localhost : {{ ansible_eth0.ipv4.address }}{% if ansible_docker0 %} : {{ ansible_docker0.ipv4.network}}/16{% endif %}'
+exim_domainlist_local_domains: '@ : localhost : supergravity.org : supergravity.local'
+exim_primary_hostname: '{% if kitchen_run %}supergravity.local{%else%}supergravity.org{%endif%}'
