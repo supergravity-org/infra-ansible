@@ -1,0 +1,6 @@
+---
+  - name: add user for incoming e-mails
+    user: >
+      name=discuss
+      comment='discourse email account'
+      password='{{ user_discuss_password|default('discuss') }}'

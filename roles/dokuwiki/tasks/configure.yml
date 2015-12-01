@@ -1,0 +1,19 @@
+- name: "ensure config folder"
+  file: path="/srv/dokuwiki/data/conf" state=directory recurse=true
+
+- name: "create skeleton config if missing"
+  template: >
+    src=local.php.j2
+    dest=/srv/dokuwiki/data/conf/local.php
+    owner=33
+    group=33
+    force=no
+
+- name: "adjust settings"
+  lineinfile: >
+    dest=/srv/dokuwiki/data/conf/local.php
+    line="$conf['{{item.0|replace("__", "']['")}}'] = {% if item.1 is number %}{{item.1}}{% elif not item.1|match('\'') %}'{{item.1}}'{% else %}{{item.1 | quote}}{%endif%};"
+    regexp='^\$conf\[.{{item.0|replace("__", "....")}}.\].=.*$'
+  with_items: "{{dokuwiki_settings.items()}}"
+
+#    line="$conf['{{item.0}}'] = {{ item.1 | repr}}"

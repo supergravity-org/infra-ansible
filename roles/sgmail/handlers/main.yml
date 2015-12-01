@@ -1,2 +1,4 @@
 ---
 # handlers file for sgmail
+- name: restart dovecot
+  service: name=dovecot state=restarted

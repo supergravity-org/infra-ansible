@@ -78,6 +78,7 @@
       ports:
         - '{{ dokuwiki_port }}:80'
       volumes:
+        - '/etc/hosts:/etc/hosts'
         - '{{ dokuwiki_datadir }}:/var/dokuwiki-storage'
 
   # - name: create data container

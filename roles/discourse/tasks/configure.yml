@@ -88,7 +88,6 @@
 - shell: "/var/discourse/launcher rebuild {{discourse_name}}"
   when: discourse_running.rc != 0
 
-
 # - name: generate docker image
 #   shell: /var/discourse/launcher rebuild app
 #   when: discourse_docker_image.stdout.count() > 0

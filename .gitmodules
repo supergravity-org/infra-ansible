@@ -10,6 +10,3 @@
 [submodule "sg_tendenci/django-simple-sso"]
 	path = sg_tendenci/django-simple-sso
 	url = https://github.com/aldryn/django-simple-sso.git
-[submodule "sg_tendenci/extern/django-simple-sso"]
-	path = sg_tendenci/extern/django-simple-sso
-	url = https://github.com/aldryn/django-simple-sso.git

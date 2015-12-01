@@ -6,7 +6,7 @@ tendenci_repo_url: https://github.com/tendenci/tendenci
 tendenci_dev: false
 
 # Version to checkout.
-tendenci_version: 'v7.1.25'
+tendenci_version: 'v7.1.27'
 
 # Name of this Tendenci instance.
 tendenci_name: tendenci

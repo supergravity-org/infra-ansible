@@ -1,7 +1,7 @@
 #<% require 'kitchen-sync' %>
 ---
 driver:
-    name: vagrant
+  name: vagrant
 
 provisioner:
   name: ansible_playbook
@@ -27,6 +27,7 @@ suites:
     driver_config:
       customize:
         memory: 1300
+        cpus: 2
       network:
       - ['forwarded_port', {guest: 80, host: 8080}]
       - [ 'private_network', { ip: '192.168.33.11' } ]
@@ -49,6 +50,8 @@ suites:
         wagtail_src_path: /tmp/kitchen/supergravity_main
         wagtail_settings: supergravity_main.settings.dev
         askbot_url: http://ask.supergravity.local:8080
+        dokuwiki_oauth_key: tPdC3J3pIzrY3yMeDCiyJL1i1rLWRZprlDvmWryW
+        dokuwiki_oauth_secret: Zn2bpBytFqsHLMDK5hLHqcfBsU1iWRUwpXACICUbidZJEeSSyi8yLcQaAu7JGwNoR67vZEjBoyXkha8uHNVPXmEVx5QZ6dYCnaxRd1pOjTTMFFnTqc56VkSiE0CHSrRZ
 
   - name: mail
     hostname: mail.kitchen

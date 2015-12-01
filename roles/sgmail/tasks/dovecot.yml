@@ -1,0 +1,9 @@
+---
+  - name: 'install dovecot components'
+    apt: name={{item}}
+    notify: restart dovecot
+    with_items:
+      - dovecot-pop3d
+      - dovecot-imapd
+      - dovecot-sieve
+      - dovecot-managesieved

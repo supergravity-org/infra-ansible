@@ -94,6 +94,7 @@
     dest="{{ tendenci_base_dir }}/download/tendenci-{{tendenci_version}}.zip"
 
 - name: set install version
+  changed_when: false
   copy: >
     dest={{ tendenci_base_dir}}/requirements/tendenci.txt
     content="{{ tendenci_base_dir }}/download/tendenci-{{tendenci_version}}.zip"
@@ -110,6 +111,9 @@
     - 'Pillow'
     - django-oauth-toolkit
     - django-mama-cas
+    - djangorestframework
+    - markdown
+    # - django-oauth2-provider
 
 # - name: freeze django-robots
 #   lineinfile: >

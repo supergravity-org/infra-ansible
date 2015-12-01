@@ -1,3 +1,9 @@
 from django.shortcuts import render
+from oauth2_provider.decorators import protected_resource
 
-# Create your views here.
+
+@protected_resource()
+def user_json(request):
+    # An access token is required to get here...
+    # ...
+    pass

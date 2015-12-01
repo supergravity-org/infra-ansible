@@ -2,8 +2,13 @@
   - name: update /etc/hosts
     replace: >
       dest=/etc/hosts
-      regexp='^127\.0\.0\.1(.*)$'
-      replace='127.0.0.1 localhost {% for h in local_hostnames %} {{h}}{% endfor %}'
+      regexp='^{{ansible_eth0.ipv4.address}}(.*)$'
+      replace='{{ansible_eth0.ipv4.address}} {% for h in local_hostnames %} {{h}}{% endfor %}'
+
+  - name: ensure hosts exist
+    lineinfile: >
+      dest=/etc/hosts
+      line='{{ansible_eth0.ipv4.address}} {% for h in local_hostnames %} {{h}}{% endfor %}'
 
   - name: update /etc/rc.local
     replace: >
@@ -14,12 +19,36 @@
     register: ipta
     lineinfile: >
       dest=/etc/rc.local
-      line='iptables -t nat -I OUTPUT -d 127.0.0.1 -p tcp --dport 8080 -j REDIRECT --to-port 80'
+      line='iptables -t nat -I {{item}} -d {{ansible_eth0.ipv4.address}} -p tcp --dport 8080 -j REDIRECT --to-port 80'
+    with_items:
+      - OUTPUT
+      - PREROUTING
 
   - name: execute iptables
     when: ipta.changed
-    command: iptables -t nat -I OUTPUT -d 127.0.0.1 -p tcp --dport 8080 -j REDIRECT --to-port 80
+    command: /etc/rc.local
 
   # - name: write /etc/hosts
   #   template: <
   #     src=
+
+
+  - name: create additional swapfile
+    register: swapcreated
+    command: dd if=/dev/zero bs=1M count=2048 of=/swapfile
+    args:
+      creates: '/swapfile'
+
+  - name: format swapfile
+    when: swapcreated.changed
+    command: mkswap /swapfile
+
+  - name: check if mounted
+    register: lo_run
+    changed_when: False
+    ignore_errors: true
+    command: losetup /dev/loop0
+
+  - name: swapon extra swap
+    when: lo_run.rc != 0
+    shell: "losetup /dev/loop0 /swapfile; swapon /dev/loop0"

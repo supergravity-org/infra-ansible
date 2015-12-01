@@ -31,6 +31,26 @@ discourse_developer_emails:
   - poelzi@poelzi.org
 pg_host: "{{ansible_eth0.ipv4.address}}"
 
+# dokuwiki config
+
+dokuwiki_settings:
+  title: supergravity wiki
+  license: 'cc-by-sa'
+  allowdebug: 1
+  useacl: 1
+  authtype: 'oauth'
+  superuser: '@admin'
+  disableactions: 'register,resendpwd,profile,profile_delete'
+  "plugin__oauth__custom-key": '{{ dokuwiki_oauth_key }}'
+  "plugin__oauth__custom-secret": '{{ dokuwiki_oauth_secret }}'
+  "plugin__oauth__custom-authurl": 'http://supergravity.local:8080/auth/o/authorize/'
+  "plugin__oauth__custom-tokenurl": 'http://supergravity.local:8080/auth/o/token/'
+  "plugin__oauth__custom-meurl": 'http://supergravity.local:8080/api/v1/me.json'
+  "plugin__oauth__custom-mapping": 'user=username name=username mail=email'
+  "plugin__oauth__custom-scope": 'read'
+  "plugin__oauth__singleService": 'Custom'
+  "plugin__oauth__register-login": 1
+
 # wagtail
 
 wagtail_hostname: [blog.supergravity.org, blog.supergravity.local]

@@ -19,5 +19,8 @@ extrapatterns = patterns('',
 
 extrapatterns += patterns('',
     url(r'^auth/o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    # url(r'^auth/o/', include('provider.oauth2.urls', namespace = 'oauth2')),
     url(r'^auth/cas/',  include('mama_cas.urls')),
+    url(r'^api/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/v1/', include('sg_main.api')),
 )

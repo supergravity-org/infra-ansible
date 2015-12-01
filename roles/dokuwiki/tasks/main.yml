@@ -2,3 +2,5 @@
 # tasks file for dokuwiki
 - {include: 'install.yml',
    tags: ['install']}
+- {include: 'configure.yml',
+   tags: ['configure']}

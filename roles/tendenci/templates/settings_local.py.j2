@@ -11,7 +11,9 @@ SECRET_KEY = open(os.path.join(os.path.dirname(__file__), 'session_key')).read()
 SITE_SETTINGS_KEY = open(os.path.join(os.path.dirname(__file__), 'session_key')).read()
 
 
-INSTALLED_APPS = get_setting('INSTALLED_APPS')
+# INSTALLED_APPS = get_setting('INSTALLED_APPS')
+from tendenci.settings import INSTALLED_APPS, MIDDLEWARE_CLASSES
+
 
 INSTALLED_APPS += (
     'django.contrib.gis',
@@ -31,6 +33,14 @@ INSTALLED_APPS += (
     'sg_main',
     'oauth2_provider',
     'mama_cas',
+    'rest_framework',
+    # 'provider',
+    # 'provider.oauth2',
+)
+
+MIDDLEWARE_CLASSES += (
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    'oauth2_provider.middleware.OAuth2TokenMiddleware'
 )
 
 USE_I18N = True
@@ -166,3 +176,50 @@ TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 #                 'django.template.loaders.filesystem.Loader',
 #                 'django.template.loaders.app_directories.Loader',
 #             ]
+
+OAUTH2_PROVIDER = {
+    # this is the list of available scopes
+    'SCOPES': {'read': 'Read scope', 'write': 'Write scope'}
+}
+
+AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
+    # Uncomment following if you want to access the admin
+    'django.contrib.auth.backends.ModelBackend'
+)
+
+REST_FRAMEWORK = {
+    #'DEFAULT_PERMISSION_CLASSES': (
+    #  'rest_framework.permissions.IsAuthenticated',
+    #  'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    #),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+      # 'rest_framework.authentication.OAuth2Authentication',
+      'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
+}
+
+{% if kitchen_run %}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': '/tmp/django-sg-main.log',
+        },
+    },
+    'loggers': {
+        'django.request': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
+{% endif %}

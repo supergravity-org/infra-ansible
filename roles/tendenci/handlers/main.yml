@@ -1,12 +1,5 @@
 ---
 - name: restart tendenci
-  when: ansible_os_family == "Gentoo"
-  service: >
-    name={{ tendenci_name }}
-    state=restarted
-
-- name: restart tendenci
-  when: ansible_os_family == "Debian"
   service: >
     name=uwsgi-emperor
     state=restarted
