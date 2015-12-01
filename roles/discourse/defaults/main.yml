@@ -91,6 +91,17 @@ discourse_plugins: []
 #####
 discourse_developer_emails: []
 
+####
+## List of local admin users to create
+## needs to be in form:
+##  [['login', 'email', 'password']]
+####
+discourse_admins: []
+
+# discourse_admins:
+#    - [['admin', 'admin@example.com', 'admin']]
+
+
 #####
 ## SMTP username and password of the mailserver this Discourse instance
 ## will use. For passwordless authentication leave empty.

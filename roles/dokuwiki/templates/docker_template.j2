@@ -5,7 +5,7 @@ MAINTAINER Ilya Stepanov <dev@ilyastepanov.com>
 # this is an example Dockerfile that demonstrates how to add Dokuwiki plugins to istepanov/dokuwiki image
 
 RUN apt-get update && \
-    apt-get install -y unzip {% for pl in dokuwiki_plugins.values() %}{% if 'install' in pl %}{{ pl.install|join(' ')}} {% endif %}{% endfor %} && \
+    apt-get install -y unzip {% if dokuwiki_plugins %}{% for pl in dokuwiki_plugins.values() %}{% if 'install' in pl %}{{ pl.install|join(' ')}} {% endif %}{% endfor %}{% endif %} && \
     apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 RUN mkdir -p /plugins
@@ -15,6 +15,7 @@ RUN mkdir -p /plugins
 #    unzip stable.zip -d /var/www/lib/plugins/ && \
 #    mv /var/www/lib/plugins/dokuwiki-plugin-todo-stable /var/www/lib/plugins/todo && \
 #    rm -rf stable.zip
+{% if dokuwiki_plugins %}
 {% for name, plugin in dokuwiki_plugins.items() %}
 # plugin: {{ name }}
 RUN curl -L "{{plugin.url}}" -o /plugins/{{name}}.zip && \
@@ -22,3 +23,4 @@ RUN curl -L "{{plugin.url}}" -o /plugins/{{name}}.zip && \
     mv /var/www/lib/plugins/{{plugin.move.0}} /var/www/lib/plugins/{{plugin.move.1}} {% endif %}
 
 {% endfor %}
+{% endif %}

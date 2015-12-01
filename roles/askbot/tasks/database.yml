@@ -1,4 +1,5 @@
 ---
+- meta: flush_handlers
 - name: create database user
   delegate_to: "{{ askbot_db_delegate_to }}"
   sudo_user: postgres
@@ -6,6 +7,13 @@
     name={{ askbot_db_user }}
     password="{{ askbot_db_pass }}"
   tags: accounts
+
+- name: create database
+  delegate_to: "{{ askbot_db_delegate_to }}"
+  sudo_user: postgres
+  postgresql_db: >
+    name={{ askbot_db_name }}
+    owner={{ askbot_db_user }}
 
 - name: set database permissions
   delegate_to: "{{ askbot_db_delegate_to }}"
@@ -15,13 +23,6 @@
     privs=ALL
     type=database
     role={{ askbot_db_user }}
-
-- name: create database
-  delegate_to: "{{ askbot_db_delegate_to }}"
-  sudo_user: postgres
-  postgresql_db: >
-    name={{ askbot_db_name }}
-    owner={{ askbot_db_user }}
 
 - name: initialize database
   sudo_user: "{{ askbot_user }}"

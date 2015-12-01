@@ -31,7 +31,45 @@ discourse_developer_emails:
   - poelzi@poelzi.org
 pg_host: "{{ansible_eth0.ipv4.address}}"
 
+discourse_admins:
+    - [['admin', 'admin@supergravity.org', '{{ discourse_admin_pwd | defaults("admin") }}']]
+
+
 # dokuwiki config
+
+dokuwiki_plugins:
+  mathjax:
+    url: 'https://github.com/liffiton/dokuwiki-plugin-mathjax/archive/master.zip'
+    move: ['dokuwiki-plugin-mathjax-master', 'mathjax']
+  indexmenu:
+    url: 'https://github.com/samuelet/indexmenu/archive/master.zip'
+    move: ['indexmenu-master', 'indexmenu']
+  pagelist:
+    url: 'https://github.com/dokufreaks/plugin-pagelist/zipball/master'
+    move: ['dokufreaks-plugin-pagelist-*', 'pagelist']
+  tag:
+    url: 'https://github.com/dokufreaks/plugin-tag/zipball/master'
+    move: ['dokufreaks-plugin-tag-*', 'tag']
+  include:
+    url: 'https://github.com/dokufreaks/plugin-include/zipball/master'
+    move: ['dokufreaks-plugin-include-*', 'include']
+  mimetex:
+    url: 'https://github.com/MichaelGr/dokuwiki-plugin-mimeTeX/zipball/master'
+    move: ['MichaelGr-dokuwiki-plugin-mimeTeX-*', 'mimetex']
+    install: ['mimetex']
+  mathjax:
+    url: 'https://github.com/liffiton/dokuwiki-plugin-mathjax/archive/master.zip'
+    move: ['dokuwiki-plugin-mathjax-master', 'mathjax']
+  oauth:
+    url: 'https://github.com/supergravity-org/dokuwiki-plugin-oauth/archive/master.zip'
+    move: ['dokuwiki-plugin-oauth-master', 'oauth']
+  gitlog:
+    url: 'https://github.com/alexwenzel/dokuwiki-plugin-gitlog/archive/master.zip'
+    move: ['dokuwiki-plugin-gitlog-master', 'gitlog']
+  gitbackend:
+    url: 'https://github.com/woolfg/dokuwiki-plugin-gitbacked/archive/master.zip'
+    move: ['dokuwiki-plugin-gitbacked-master', 'gitbacked']
+    install: ['git']
 
 dokuwiki_settings:
   title: supergravity wiki

@@ -53,7 +53,6 @@
     app_path={{ tendenci_base_dir }}
     virtualenv={{ tendenci_virtenv_dir }}
     command=load_base_defaults
-    creates=./media/files/Staff/d278f3d6/Tendenci-Stock-Images-by-Ed-Schipul-2011-94-a8fc5_medium_640.jpg
 
 # - name: initialize database
 #   sudo_user: "{{ tendenci_user }}"

@@ -52,6 +52,7 @@ suites:
         askbot_url: http://ask.supergravity.local:8080
         dokuwiki_oauth_key: tPdC3J3pIzrY3yMeDCiyJL1i1rLWRZprlDvmWryW
         dokuwiki_oauth_secret: Zn2bpBytFqsHLMDK5hLHqcfBsU1iWRUwpXACICUbidZJEeSSyi8yLcQaAu7JGwNoR67vZEjBoyXkha8uHNVPXmEVx5QZ6dYCnaxRd1pOjTTMFFnTqc56VkSiE0CHSrRZ
+        discourse_hostname: 'discuss.supergravity.local:8080'
 
   - name: mail
     hostname: mail.kitchen

@@ -41,3 +41,9 @@
     line="DOCKER_OPTS=\"-H unix:// -H tcp://{{ docker_host_ip }}:{{ docker_host_port }}\""
   notify: "restart docker"
   when: "docker_installed and export_docker_host"
+
+- name: install pip
+  apt: name=python-pip
+
+- name: Install docker-py as a workaround for Ansible issue
+  pip: name=docker-py version=1.2.3

@@ -2,6 +2,7 @@
 - hosts: www
   sudo: true
   roles:
+     - { role: install-docker}
      - { role: exim,
          tags: ['mail']}
      - { role: sgmail,
@@ -9,7 +10,6 @@
      - { role: sgbasics,
          tags: ['sgbasics']
        }
-     - { role: install-docker}
      - { role: galaxyprojectdotorg.postgresql}
      - { role: tersmitten.redis}
      - { role: dokuwiki,

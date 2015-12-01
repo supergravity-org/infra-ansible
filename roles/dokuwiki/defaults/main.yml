@@ -12,5 +12,4 @@ dokuwiki_builddir: /srv/{{dokuwiki_name}}
 dokuwiki_datadir: '{{ dokuwiki_builddir }}/data'
 
 dokuwiki_settings: []
-
 dokuwiki_plugins: {}
