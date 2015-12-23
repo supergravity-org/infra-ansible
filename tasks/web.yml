@@ -21,8 +21,8 @@
          tags: ['askbot']}
      - { role: tendenci,
          tags: ['tendenci']}
-     - { role: supergravity_main,
-         tags: ['supergravity_main']}
+     #- { role: supergravity_main,
+     #     tags: ['supergravity_main']}
      - { role: discourse,
          tags: ['discourse'],
         }

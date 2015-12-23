@@ -9,11 +9,24 @@
     group=33
     force=no
 
+- stat: path=/srv/dokuwiki/data/conf/local.php
+  register: dokuwiki_local
+
 - name: "adjust settings"
   lineinfile: >
     dest=/srv/dokuwiki/data/conf/local.php
     line="$conf['{{item.0|replace("__", "']['")}}'] = {% if item.1 is number %}{{item.1}}{% elif not item.1|match('\'') %}'{{item.1}}'{% else %}{{item.1 | quote}}{%endif%};"
     regexp='^\$conf\[.{{item.0|replace("__", "....")}}.\].=.*$'
   with_items: "{{dokuwiki_settings.items()}}"
+  when: dokuwiki_local.stat.exists == True
+
+
+# - name: "add admin user"
+#   lineinfile: >
+#     dest=/srv/dokuwiki/data/conf/users.auth.php
+#     line="{{item.0}}:{{item.1.password | password_hash('sha256')}}"
+#     regexp='^{{item.0}}:.*$'
+#   with_items: dokuwiki_admins.items()
+
 
 #    line="$conf['{{item.0}}'] = {{ item.1 | repr}}"

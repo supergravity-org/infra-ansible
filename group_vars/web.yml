@@ -32,7 +32,7 @@ discourse_developer_emails:
 pg_host: "{{ansible_eth0.ipv4.address}}"
 
 discourse_admins:
-    - [['admin', 'admin@supergravity.org', '{{ discourse_admin_pwd | defaults("admin") }}']]
+    - [['admin', 'admin@supergravity.org', '{{ discourse_admin_pwd | default("admin") }}']]
 
 
 # dokuwiki config
@@ -72,6 +72,7 @@ dokuwiki_plugins:
     install: ['git']
 
 dokuwiki_settings:
+  lang: 'en'
   title: supergravity wiki
   license: 'cc-by-sa'
   allowdebug: 1
@@ -134,7 +135,7 @@ nginx_configs:
     - proxy_headers_hash_max_size 1024
   upstream:
     - upstream askbot { server unix://{{askbot_base_dir}}/uwsgi-askbot.socket; }
-    - upstream supergravity_main { server unix://{{wagtail_base_dir}}/uwsgi.socket; }
+    # - upstream supergravity_main { server unix://{{wagtail_base_dir}}/uwsgi.socket; }
     - upstream tendenci { server unix://{{tendenci_base_dir}}/uwsgi-tendenci.socket; }
 nginx_sites:
   default:

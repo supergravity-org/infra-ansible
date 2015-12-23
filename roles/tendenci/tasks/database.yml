@@ -39,6 +39,7 @@
 - name: run database migrations
   command: "{{ tendenci_virtenv_dir }}/exec python {{tendenci_base_dir}}/deploy.py"
   ignore_errors: True
+  tags: ['migrate']
   args:
     chdir: "{{ tendenci_base_dir }}"
 
